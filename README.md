@@ -99,6 +99,41 @@ stow opencode
   - `permissions.md` - Permission reference
 - **commands/**, **modes/**, **plugins/** - Other extensions (create as needed)
 
+## Code Style Guidelines
+
+When creating custom agents, skills, or rules, follow these style conventions:
+
+### Shell Scripts (.sh, .bash, .zsh)
+- Indentation: 4 spaces
+- Shebang: `#!/bin/bash` at top of file
+- Always use `set -e` for error handling
+- Use descriptive variable names in UPPER_CASE
+- Comment with `#` prefix
+- Use functions for complex logic
+- Exit immediately on command failure with `set -e`
+
+### Markdown (.md) - Agents, Skills, Rules
+- Use clear, descriptive titles
+- Structure with headings (`##`, `###`)
+- Use code blocks for examples: ```bash or ```json
+- Keep line length reasonable (< 120 chars when possible)
+- Use bullet lists for enumerations
+- Include usage examples and expected output
+
+### JSON Configuration (.json)
+- Indentation: 2 spaces
+- Trailing commas allowed (for readability)
+- Use descriptive keys
+- Keep permissions organized logically
+- Comment JSON with "instructions" array referencing rules files
+
+### General Rules
+- Encoding: UTF-8
+- Line endings: LF (Unix-style)
+- Trim trailing whitespace
+- Always insert final newline
+- Use meaningful filenames (lowercase with hyphens for agents/skills)
+
 ## Sensitive Data
 
 ⚠️ **Important**: The `~/.claude.json` file may contain:
@@ -166,6 +201,62 @@ mkdir -p ~/ai_agent_dotfiles/opencode/.config/opencode/agents
 vim ~/ai_agent_dotfiles/opencode/.config/opencode/agents/my-agent.md
 ```
 
+## Stow Tips & Notes
+
+GNU Stow creates symlinks from package directories to home directory:
+
+- **Use `--no-folding`** for packages with scripts folders (not needed for ai_agent_dotfiles)
+- **Dry run mode**: `stow -n <package>` - preview changes before applying
+- **Restow**: `stow -R <package>` - refresh all symlinks for a package
+- **Unstow**: `stow -D <package>` - remove all symlinks for a package
+- **Conflicts**: Occur when files exist at target location - backup and remove before stowing
+- **Multiple packages**: Can stow multiple at once: `stow claude opencode`
+
+### Conflict Resolution
+
+If stow reports conflicts:
+```bash
+# Backup existing file
+mv ~/.claude/settings.json ~/.claude/settings.json.bak
+
+# Restow
+stow -R claude
+```
+
+## Testing & Development
+
+When working with AI agent configurations, test changes safely:
+
+### Shell Testing
+
+Test shell scripts by running them in a safe environment:
+```bash
+# Check syntax
+bash -n install.sh
+
+# Test in dry-run mode where supported
+stow -n <package>
+```
+
+### Pre-commit Hooks
+
+Always run linting/typechecking before committing:
+```bash
+# Check what commands are available
+cd ~/ai_agent_dotfiles
+
+# If using pre-commit hooks
+pre-commit run --all-files
+```
+
+### Verification
+
+After making changes:
+1. Test Claude Code with new settings: `claude --help` or run a simple task
+2. Verify OpenCode permissions work by having it read files
+3. Check that all agents/skills are accessible
+4. Ensure symlinks are correct: `ls -la ~/.claude ~/.config/opencode`
+
 ## Restowing (After Updates)
 
 If you add new files, refresh the symlinks:
@@ -196,6 +287,26 @@ git status
 git add .
 git commit -m "Update Claude Code settings"
 git push
+```
+
+### Commit Message Format
+
+Follow conventional commits (or use commitizen if configured):
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `chore:` - Maintenance tasks
+- `docs:` - Documentation changes
+- `style:` - Code style changes (no functional change)
+- `refactor:` - Code refactoring
+- `config:` - Configuration updates
+
+### If Using Commitizen
+
+```bash
+cz commit     # Create a commit with conventional format
+cz bump       # Bump version based on commits
+pcr           # Run pre-commit hooks on all files
+pcu           # Update pre-commit hooks
 ```
 
 ## Why Separate from Main Dotfiles?
