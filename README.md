@@ -22,10 +22,10 @@ cd ~/ai_agent_dotfiles
 
 The installer uses [GNU Stow](https://www.gnu.org/software/stow/) to create symlinks:
 
-| Package | Symlinks To | Contains |
-|---------|-------------|----------|
-| `claude` | `~/.claude/` | Settings, agents, skills, rules, keybindings |
-| `opencode` | `~/.config/opencode/` | Config, rules, permissions |
+| Package    | Symlinks To           | Contains                                     |
+| ---------- | --------------------- | -------------------------------------------- |
+| `claude`   | `~/.claude/`          | Settings, agents, skills, rules, keybindings |
+| `opencode` | `~/.config/opencode/` | Config, rules, permissions                   |
 
 ## Structure
 
@@ -104,6 +104,7 @@ stow opencode
 When creating custom agents, skills, or rules, follow these style conventions:
 
 ### Shell Scripts (.sh, .bash, .zsh)
+
 - Indentation: 4 spaces
 - Shebang: `#!/bin/bash` at top of file
 - Always use `set -e` for error handling
@@ -113,14 +114,16 @@ When creating custom agents, skills, or rules, follow these style conventions:
 - Exit immediately on command failure with `set -e`
 
 ### Markdown (.md) - Agents, Skills, Rules
+
 - Use clear, descriptive titles
 - Structure with headings (`##`, `###`)
-- Use code blocks for examples: ```bash or ```json
+- Use code blocks for examples: `bash or `json
 - Keep line length reasonable (< 120 chars when possible)
 - Use bullet lists for enumerations
 - Include usage examples and expected output
 
 ### JSON Configuration (.json)
+
 - Indentation: 2 spaces
 - Trailing commas allowed (for readability)
 - Use descriptive keys
@@ -128,6 +131,7 @@ When creating custom agents, skills, or rules, follow these style conventions:
 - Comment JSON with "instructions" array referencing rules files
 
 ### General Rules
+
 - Encoding: UTF-8
 - Line endings: LF (Unix-style)
 - Trim trailing whitespace
@@ -137,6 +141,7 @@ When creating custom agents, skills, or rules, follow these style conventions:
 ## Sensitive Data
 
 ⚠️ **Important**: The `~/.claude.json` file may contain:
+
 - OAuth tokens
 - MCP server configurations with API keys
 - Trust settings
@@ -146,11 +151,13 @@ This file is **NOT** included in this repository for security reasons.
 ### Setting up .claude.json
 
 Create `~/.claude.json` manually for:
+
 - MCP server configurations
 - Theme preferences
 - OAuth settings
 
 Example structure:
+
 ```json
 {
   "mcpServers": {
@@ -215,6 +222,7 @@ GNU Stow creates symlinks from package directories to home directory:
 ### Conflict Resolution
 
 If stow reports conflicts:
+
 ```bash
 # Backup existing file
 mv ~/.claude/settings.json ~/.claude/settings.json.bak
@@ -230,6 +238,7 @@ When working with AI agent configurations, test changes safely:
 ### Shell Testing
 
 Test shell scripts by running them in a safe environment:
+
 ```bash
 # Check syntax
 bash -n install.sh
@@ -241,6 +250,7 @@ stow -n <package>
 ### Pre-commit Hooks
 
 Always run linting/typechecking before committing:
+
 ```bash
 # Check what commands are available
 cd ~/ai_agent_dotfiles
@@ -252,6 +262,7 @@ pre-commit run --all-files
 ### Verification
 
 After making changes:
+
 1. Test Claude Code with new settings: `claude --help` or run a simple task
 2. Verify OpenCode permissions work by having it read files
 3. Check that all agents/skills are accessible
@@ -292,6 +303,7 @@ git push
 ### Commit Message Format
 
 Follow conventional commits (or use commitizen if configured):
+
 - `feat:` - New feature
 - `fix:` - Bug fix
 - `chore:` - Maintenance tasks

@@ -49,9 +49,9 @@ stow_package() {
         echo
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             if [ "$package" = "claude" ]; then
-                mv ~/.claude ~/.claude.backup.$(date +%s) 2>/dev/null || true
+                mv ~/.claude ~/.claude.backup."$(date +%s)" 2>/dev/null || true
             elif [ "$package" = "opencode" ]; then
-                mv ~/.config/opencode ~/.config/opencode.backup.$(date +%s) 2>/dev/null || true
+                mv ~/.config/opencode ~/.config/opencode.backup."$(date +%s)" 2>/dev/null || true
             fi
             stow -v -d "$DOTFILES_DIR" -t "$HOME" "$package"
             echo -e "${GREEN}  ✓ Installed (after backup)${NC}"

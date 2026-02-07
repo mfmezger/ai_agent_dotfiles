@@ -22,16 +22,19 @@ I follow the [Karpathy Guidelines](skills/karpathy-guidelines/SKILL.md) for all 
 <!-- Add your personal coding preferences here -->
 
 ### Language & Framework Preferences
+
 - Python: Modern Python 3.10+, type hints preferred
 - Testing: pytest, comprehensive coverage
 - Documentation: Clear docstrings for public APIs
 
 ### Style
+
 - Follow existing project conventions
 - Clear variable names over clever brevity
 - Comments explain "why", not "what"
 
 ### Workflow
+
 - Test-driven when fixing bugs
 - Incremental commits for multi-step changes
 - Ask before major architectural changes

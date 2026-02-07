@@ -86,6 +86,10 @@ logs/
 *.old
 *~
 
+# Pre-commit cache
+.cache/
+.pre-commit-hooks.yaml
+
 # ============================================================================
 # AI Tool Specific (covered by subdirectory .gitignores)
 # ============================================================================

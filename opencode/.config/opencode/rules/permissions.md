@@ -5,6 +5,7 @@
 The OpenCode configuration in this repository is set up with specific permissions:
 
 ### Allowed Bash Commands
+
 - `uv sync` - Sync Python dependencies
 - `uv run pytest *` - Run pytest with any arguments
 - `uv run pytest` - Run pytest without arguments
@@ -22,7 +23,9 @@ The OpenCode configuration in this repository is set up with specific permission
 ### Shell Tool Configuration Notes
 
 #### cat → bat Replacement
+
 In this dotfiles repository, the `cat` command is replaced with `bat` via zsh-abbr:
+
 - `bat` provides syntax highlighting, line numbers, and Git integration
 - It's interactive with scrollable output and search (press `/`)
 - When AI agents use `cat`, they will invoke `bat` instead
@@ -30,13 +33,16 @@ In this dotfiles repository, the `cat` command is replaced with `bat` via zsh-ab
 - Configuration: See `zsh/.zshrc` line 116
 
 #### eza → ls Replacement
+
 The `ls` command is replaced with `eza` for better icons and Git status
 
 ### Web Access
+
 - `websearch` - Allowed for searching the web
 - `codesearch` - Allowed for code searches
 
 ### File Operations
+
 - `read` - Set to "allow" (always allow reading files)
 - `glob` - Set to "allow" (always allow file pattern matching)
 - `edit` - Set to "ask" (requires approval for file edits)

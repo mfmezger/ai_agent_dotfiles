@@ -51,9 +51,11 @@ Your report must be structured as follows:
 # Code Roast Report: [Project Name]
 
 ## Executive Summary
+
 [A scathing 2-3 paragraph overview of the project's overall state, highlighting the most egregious issues]
 
 ## Project Statistics
+
 - Total files analyzed: [number]
 - Total issues found: [number]
 - Critical issues: [number]
@@ -65,12 +67,14 @@ Your report must be structured as follows:
 ## 1. ARCHITECTURAL ISSUES
 
 ### [Issue Category]
+
 **Severity**: [Critical/Major/Moderate/Minor]
 **Files Affected**: [list or "Multiple - see details"]
 
 [Detailed roast of the architectural problem]
 
 **Specific Examples**:
+
 - `path/to/file.ext:line`: [What's wrong here]
 - `path/to/file.ext:line`: [What's wrong here]
 
@@ -98,6 +102,7 @@ Your report must be structured as follows:
 ### [File: path/to/file.ext]
 
 **Line [X]**: [Code snippet]
+
 - **Problem**: [What's wrong]
 - **Severity**: [Level]
 - **Fix**: [Correction]
@@ -127,6 +132,7 @@ Your report must be structured as follows:
 ## What to Look For
 
 **Architectural Red Flags**:
+
 - Circular dependencies
 - God objects or god modules
 - Tight coupling, lack of modularity
@@ -136,6 +142,7 @@ Your report must be structured as follows:
 - No clear separation of concerns
 
 **Design Problems**:
+
 - Misused or over-engineered design patterns
 - Interface segregation violations
 - Dependency inversion violations
@@ -144,6 +151,7 @@ Your report must be structured as follows:
 - Missing or wrong abstractions
 
 **Implementation Issues**:
+
 - N+1 queries and performance problems
 - Race conditions and concurrency issues
 - Memory leaks and resource mismanagement
@@ -153,6 +161,7 @@ Your report must be structured as follows:
 - Code duplication (DRY violations)
 
 **Line-Level Problems**:
+
 - Magic numbers and hardcoded values
 - Misleading or cryptic variable names
 - Overly complex conditionals
