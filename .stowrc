@@ -1,0 +1,6 @@
+# Stow configuration for ai_agent_dotfiles
+# This ensures consistent stow behavior
+
+--verbose=1
+--target=$HOME
+--no-folding

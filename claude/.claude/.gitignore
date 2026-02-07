@@ -1,0 +1,41 @@
+# Claude Code - ignore cache and temporary files
+
+# Session data
+session-*
+session-env/
+*.lock
+
+# Cache and history
+cache/
+ide/
+file-history/
+history.jsonl
+shell-snapshots/
+projects/
+
+# Plugins
+plugins/cache/
+plugins/marketplaces/
+
+# Plans (usually project-specific)
+plans/
+
+# Statistics and telemetry
+stats-cache.json
+statsig/
+telemetry/
+
+# Debug and todos
+debug/
+todos/
+
+# Config that might contain sensitive data
+config/
+
+# Local/temporary files
+*.local.*
+*.backup*
+.DS_Store
+
+# Logs
+*.log

@@ -1,0 +1,29 @@
+# OpenCode - ignore dependencies and temporary files
+
+# Dependencies
+node_modules/
+bun.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Cache and temporary files
+.cache/
+*.log
+.DS_Store
+
+# Session and state files
+.opencode-session
+session-*
+*.tmp
+
+# Local settings (if any)
+*.local.*
+*.local.json
+*.local.md
+*.backup*
+
+# Build outputs (if plugins are built)
+dist/
+build/
+*.js.map
