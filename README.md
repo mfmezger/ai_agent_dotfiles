@@ -36,7 +36,9 @@ The installer uses [GNU Stow](https://www.gnu.org/software/stow/) to create syml
 │       ├── settings.json          # User preferences
 │       ├── CLAUDE.md              # User-level context and guidelines
 │       ├── agents/                # Custom agents
-│       │   └── code-roaster.md   # Comprehensive code critique agent
+│       │   ├── code-roaster.md   # Comprehensive code critique agent
+│       │   ├── refactorer.md     # SOLID + DRY + KISS refactoring planner
+│       │   └── detective.md      # Code smell and best practices detector
 │       ├── skills/                # Custom skills
 │       │   └── karpathy-guidelines/  # Coding best practices
 │       ├── rules/                 # User-level rules (empty for now)
@@ -47,7 +49,9 @@ The installer uses [GNU Stow](https://www.gnu.org/software/stow/) to create syml
 │       └── opencode/
 │           ├── opencode.json      # Main config with permissions
 │           ├── agents/            # Custom agents
-│           │   └── code-roaster.md  # Comprehensive code critique agent
+│           │   ├── code-roaster.md  # Comprehensive code critique agent
+│           │   ├── refactorer.md    # SOLID + DRY + KISS refactoring planner
+│           │   └── detective.md     # Code smell and best practices detector
 │           ├── skills/            # Custom skills (invokable)
 │           │   └── karpathy-guidelines/  # Coding best practices skill
 │           ├── rules/             # Custom rules (always loaded)
@@ -82,8 +86,10 @@ stow opencode
 - **CLAUDE.md** - User-level memory/context with Karpathy guidelines
 - **agents/** - Custom subagents for specialized tasks
   - `code-roaster.md` - Comprehensive code quality critique agent
+  - `refactorer.md` - SOLID + DRY + KISS refactoring planner with actionable plans
+  - `detective.md` - Code smell and best practices detector (Python, Go, Rust)
 - **skills/** - Reusable commands and reference material
-  - `karpathy-guidelines/` - Coding best practices skill
+- `karpathy-guidelines/` - Coding best practices skill
 - **rules/** - User-level coding conventions and workflows
 - **keybindings.json** - Custom keyboard shortcuts (create if needed)
 
@@ -92,12 +98,71 @@ stow opencode
 - **opencode.json** - Permissions, instructions, global config
 - **agents/** - Custom AI subagents
   - `code-roaster.md` - Comprehensive code quality critique agent
+  - `refactorer.md` - SOLID + DRY + KISS refactoring planner with actionable plans
+  - `detective.md` - Code smell and best practices detector (Python, Go, Rust)
 - **skills/** - Invokable skills
-  - `karpathy-guidelines/` - Coding best practices skill (can be invoked)
+- `karpathy-guidelines/` - Coding best practices skill (can be invoked)
 - **rules/** - Modular instruction files (always loaded)
   - `karpathy-guidelines.md` - Coding best practices (always active)
-  - `permissions.md` - Permission reference
-- **commands/**, **modes/**, **plugins/** - Other extensions (create as needed)
+- `permissions.md` - Permission reference
+- `commands/**, **modes/**, **plugins/\*\* - Other extensions (create as needed)
+
+## Custom Agents
+
+### code-roaster
+
+Comprehensive, no-holds-barred critique of your entire codebase. Delivers brutal honesty about code quality, architecture, design patterns, and implementation issues across all levels - from architectural decisions down to individual problematic lines.
+
+**Use when:**
+
+- After major refactoring to identify remaining issues
+- Before code reviews to find problems preemptively
+- When technical debt has accumulated and you need a reality check
+- When you want unfiltered feedback on code quality
+
+### refactorer
+
+Analyzes code for violations of SOLID, DRY, and KISS principles and creates detailed, actionable refactoring plans without executing changes. Specializes in Python and Go/Rust ecosystems with language-specific patterns.
+
+**Use when:**
+
+- Before major refactoring efforts to identify structural issues
+- When technical debt needs systematic assessment
+- When code has grown organically and needs architectural review
+- When you want a prioritized roadmap for improving code quality
+
+**Key Features:**
+
+- Identifies SOLID principle violations (SRP, OCP, LSP, ISP, DIP)
+- Detects DRY violations (code duplication)
+- Finds KISS violations (over-engineering)
+- Creates step-by-step refactoring plans with risk assessment
+- Provides before/after code examples
+- Includes testing requirements and rollback strategies
+- Integrates Karpathy guidelines for surgical changes
+
+### detective
+
+Identifies code smells, best practices violations, and test smells across Python, Go, and Rust codebases with language-specific guidance. Covers security vulnerabilities, performance issues, and test quality problems.
+
+**Use when:**
+
+- When you need a comprehensive code quality audit
+- Before major releases to catch code smells
+- When performance issues are suspected
+- When security review is needed
+- When test quality needs improvement
+- When onboarding new developers and setting quality standards
+
+**Key Features:**
+
+- Detects Martin Fowler's classic code smells
+- Language-specific anti-patterns for Python, Go, and Rust
+- Security vulnerability detection (hardcoded credentials, SQL injection, etc.)
+- Performance smell identification (N+1 queries, memory leaks, etc.)
+- Test smell analysis (brittle tests, missing assertions, test pollution)
+- Prioritized recommendations with severity ratings
+- Detailed code examples showing fixes
 
 ## Code Style Guidelines
 
