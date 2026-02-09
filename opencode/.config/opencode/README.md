@@ -21,10 +21,7 @@ To add external instruction files to opencode.json:
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "instructions": [
-    "docs/contributing.md",
-    "rules/*.md"
-  ]
+  "instructions": ["docs/contributing.md", "rules/*.md"]
 }
 ```
 
