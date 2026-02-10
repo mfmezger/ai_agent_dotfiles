@@ -33,15 +33,20 @@ The installer uses [GNU Stow](https://www.gnu.org/software/stow/) to create syml
 ~/ai_agent_dotfiles/
 ├── claude/
 │   └── .claude/
-│       ├── settings.json          # User preferences
+│       ├── settings.json          # User preferences (model, plugins, permissions)
 │       ├── CLAUDE.md              # User-level context and guidelines
 │       ├── agents/                # Custom agents
 │       │   ├── code-roaster.md   # Comprehensive code critique agent
 │       │   ├── refactorer.md     # SOLID + DRY + KISS refactoring planner
-│       │   └── detective.md      # Code smell and best practices detector
+│       │   ├── detective.md      # Code smell and best practices detector
+│       │   └── vault-organizer.md # Documentation/notes organizer agent
 │       ├── skills/                # Custom skills
-│       │   └── karpathy-guidelines/  # Coding best practices
-│       ├── rules/                 # User-level rules (empty for now)
+│       │   ├── karpathy-guidelines/       # Coding best practices
+│       │   ├── convert-to-markdown/       # Document → Markdown converter
+│       │   ├── google-workspace-convert/  # Google Docs/Sheets ↔ Markdown
+│       │   ├── generate-image/            # Gemini image generation
+│       │   ├── jira-datacenter/           # Jira Data Center REST client
+│       │   └── confluence-datacenter/     # Confluence Data Center REST client
 │       └── .gitignore             # Ignore cache/session files
 │
 ├── opencode/
@@ -82,16 +87,38 @@ stow opencode
 
 ### Claude Code (`~/.claude/`)
 
-- **settings.json** - Model selection, enabled plugins
+- **settings.json** - Model selection, enabled plugins, permissions
 - **CLAUDE.md** - User-level memory/context with Karpathy guidelines
 - **agents/** - Custom subagents for specialized tasks
   - `code-roaster.md` - Comprehensive code quality critique agent
   - `refactorer.md` - SOLID + DRY + KISS refactoring planner with actionable plans
   - `detective.md` - Code smell and best practices detector (Python, Go, Rust)
+  - `vault-organizer.md` - Documentation and notes organization agent
 - **skills/** - Reusable commands and reference material
+  - `karpathy-guidelines/` - Coding best practices skill
+  - `convert-to-markdown/` - Convert PDF, DOCX, PPTX, images to Markdown
+  - `google-workspace-convert/` - Google Docs/Sheets/Slides to/from Markdown
+  - `generate-image/` - AI image generation via Gemini (text-to-image, image-to-image)
+  - `jira-datacenter/` - Jira Data Center REST API client (issues, JQL, transitions)
+  - `confluence-datacenter/` - Confluence Data Center REST API client (pages, CQL, attachments)
+- **rules/** - User-level coding conventions and workflows
+- **keybindings.json** - Custom keyboard shortcuts (create if needed)
+- **skills/** - Reusable commands and reference material
+  <<<<<<< HEAD
 - `karpathy-guidelines/` - Coding best practices skill
 - **rules/** - User-level coding conventions and workflows
 - **keybindings.json** - Custom keyboard shortcuts (create if needed)
+  ||||||| c0b82d6
+  - `karpathy-guidelines/` - Coding best practices skill
+- **rules/** - User-level coding conventions and workflows
+- # **keybindings.json** - Custom keyboard shortcuts (create if needed)
+  - `karpathy-guidelines/` - Coding best practices skill
+  - `convert-to-markdown/` - Convert PDF, DOCX, PPTX, images to Markdown
+  - `google-workspace-convert/` - Google Docs/Sheets/Slides to/from Markdown
+  - `generate-image/` - AI image generation via Gemini (text-to-image, image-to-image)
+  - `jira-datacenter/` - Jira Data Center REST API client (issues, JQL, transitions)
+  - `confluence-datacenter/` - Confluence Data Center REST API client (pages, CQL, attachments)
+    > > > > > > > 8eb4c09144072ce1e653734b9c896f8d5e33b78e
 
 ### OpenCode (`~/.config/opencode/`)
 
