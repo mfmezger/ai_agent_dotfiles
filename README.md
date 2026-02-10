@@ -33,13 +33,18 @@ The installer uses [GNU Stow](https://www.gnu.org/software/stow/) to create syml
 ~/ai_agent_dotfiles/
 ├── claude/
 │   └── .claude/
-│       ├── settings.json          # User preferences
+│       ├── settings.json          # User preferences (model, plugins, permissions)
 │       ├── CLAUDE.md              # User-level context and guidelines
 │       ├── agents/                # Custom agents
-│       │   └── code-roaster.md   # Comprehensive code critique agent
+│       │   ├── code-roaster.md    # Comprehensive code critique agent
+│       │   └── vault-organizer.md # Documentation/notes organizer agent
 │       ├── skills/                # Custom skills
-│       │   └── karpathy-guidelines/  # Coding best practices
-│       ├── rules/                 # User-level rules (empty for now)
+│       │   ├── karpathy-guidelines/       # Coding best practices
+│       │   ├── convert-to-markdown/       # Document → Markdown converter
+│       │   ├── google-workspace-convert/  # Google Docs/Sheets ↔ Markdown
+│       │   ├── generate-image/            # Gemini image generation
+│       │   ├── jira-datacenter/           # Jira Data Center REST client
+│       │   └── confluence-datacenter/     # Confluence Data Center REST client
 │       └── .gitignore             # Ignore cache/session files
 │
 ├── opencode/
@@ -78,14 +83,18 @@ stow opencode
 
 ### Claude Code (`~/.claude/`)
 
-- **settings.json** - Model selection, enabled plugins
+- **settings.json** - Model selection, enabled plugins, permissions
 - **CLAUDE.md** - User-level memory/context with Karpathy guidelines
 - **agents/** - Custom subagents for specialized tasks
   - `code-roaster.md` - Comprehensive code quality critique agent
+  - `vault-organizer.md` - Documentation and notes organization agent
 - **skills/** - Reusable commands and reference material
   - `karpathy-guidelines/` - Coding best practices skill
-- **rules/** - User-level coding conventions and workflows
-- **keybindings.json** - Custom keyboard shortcuts (create if needed)
+  - `convert-to-markdown/` - Convert PDF, DOCX, PPTX, images to Markdown
+  - `google-workspace-convert/` - Google Docs/Sheets/Slides to/from Markdown
+  - `generate-image/` - AI image generation via Gemini (text-to-image, image-to-image)
+  - `jira-datacenter/` - Jira Data Center REST API client (issues, JQL, transitions)
+  - `confluence-datacenter/` - Confluence Data Center REST API client (pages, CQL, attachments)
 
 ### OpenCode (`~/.config/opencode/`)
 
