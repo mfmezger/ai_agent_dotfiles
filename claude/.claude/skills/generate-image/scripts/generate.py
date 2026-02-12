@@ -13,6 +13,7 @@ import os
 import sys
 import tempfile
 from pathlib import Path
+from typing_extensions import override
 
 from dotenv import load_dotenv
 from google import genai
@@ -63,7 +64,7 @@ def generate_image(
     Returns:
         Path to the saved image file
     """
-    load_dotenv()
+    load_dotenv(override=True)
 
     project = os.environ.get("GOOGLE_CLOUD_PROJECT") or os.environ.get("CLOUDSDK_CORE_PROJECT")
     if not project:
