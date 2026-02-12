@@ -4,7 +4,6 @@
       "Bash(go build:*)"
     ]
   },
-  "model": "claude-opus-4-6",
   "enabledPlugins": {
     "context7@claude-plugins-official": true,
     "superpowers@superpowers-marketplace": true,
