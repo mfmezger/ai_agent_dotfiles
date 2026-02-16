@@ -13,6 +13,19 @@ Create a git commit for the current changes using a concise Conventional Commits
 - `scope` REQUIRED. Short noun in parentheses for the affected area (e.g., `api`, `parser`, `ui`).
 - `summary` REQUIRED. Short, imperative, <= 72 chars, no trailing period.
 
+## Explanations 
+
+fix: A bug fix. Correlates with PATCH in SemVer
+feat: A new feature. Correlates with MINOR in SemVer
+docs: Documentation only changes
+style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+refactor: A code change that neither fixes a bug nor adds a feature
+perf: A code change that improves performance
+test: Adding missing or correcting existing tests
+build: Changes that affect the build system or external dependencies (example scopes: pip, docker, npm)
+ci: Changes to CI configuration files and scripts (example scopes: GitLabCI)
+
+
 ## Notes
 
 - Body is OPTIONAL. If needed, add a blank line after the subject and write short paragraphs.
@@ -29,7 +42,7 @@ Create a git commit for the current changes using a concise Conventional Commits
 
 1. Infer from the prompt if the user provided specific file paths/globs and/or additional instructions.
 2. Review `git status` and `git diff` to understand the current changes (limit to argument-specified files if provided).
-3. (Optional) Run `git log -n 50 --pretty=format:%s` to see commonly used scopes.
+3. (Optional) Run `git log -n 10 --pretty=format:%s` to see commonly used scopes.
 4. If there are ambiguous extra files, ask the user for clarification before committing.
 5. Stage only the intended files (all changes if no files specified).
 6. Run `git commit -m "<subject>"` (and `-m "<body>"` if needed).
