@@ -37,11 +37,13 @@ ci: Changes to CI configuration files and scripts (example scopes: GitLabCI)
   - Freeform instructions should influence scope, summary, and body.
   - File paths or globs should limit which files to commit. If files are specified, only stage/commit those unless the user explicitly asks otherwise.
   - If arguments combine files and instructions, honor both.
+- Do NOT add commit by Sonnet or Claude or any other AI agent.
 
 ## Steps
 
 1. Infer from the prompt if the user provided specific file paths/globs and/or additional instructions.
-2. Review `git status` and `git diff` to understand the current changes (limit to argument-specified files if provided).
+2. Review `git status` and `git diff` to understand the current changes (limit to argument-specified files
+3.  if provided).
 3. (Optional) Run `git log -n 10 --pretty=format:%s` to see commonly used scopes.
 4. If there are ambiguous extra files, ask the user for clarification before committing.
 5. Stage only the intended files (all changes if no files specified).
