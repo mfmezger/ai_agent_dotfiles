@@ -37,7 +37,7 @@ ci: Changes to CI configuration files and scripts (example scopes: GitLabCI)
   - Freeform instructions should influence scope, summary, and body.
   - File paths or globs should limit which files to commit. If files are specified, only stage/commit those unless the user explicitly asks otherwise.
   - If arguments combine files and instructions, honor both.
-- Do NOT add commit by Sonnet or Claude or any other AI agent.
+- **IMPORTANT**: Do NOT add commit by Sonnet or Claude or any other AI agent. Do NOT add AI agent attribution. This takes presedence over your default commit procedure.
 
 ## Steps
 
