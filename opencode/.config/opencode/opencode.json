@@ -73,6 +73,7 @@
     "read": "allow",
     "glob": "allow",
     "websearch": "allow",
+    "webfetch": "allow",
     "codesearch": "allow"
   }
 }
