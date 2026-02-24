@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(go build:*)",
-      "Read"
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash(find:*)"
     ]
   },
   "model": "claude-opus-4-6",
