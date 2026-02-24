@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(go build:*)"
+      "Bash(go build:*)",
+      "Read"
     ]
   },
   "model": "claude-opus-4-6",
@@ -9,7 +10,9 @@
     "context7@claude-plugins-official": true,
     "superpowers@superpowers-marketplace": true,
     "claude-hud@claude-hud": true,
-    "gopls-lsp@claude-plugins-official": true
+    "gopls-lsp@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "ralph-loop@claude-plugins-official": true
   },
   "effortLevel": "medium"
 }
