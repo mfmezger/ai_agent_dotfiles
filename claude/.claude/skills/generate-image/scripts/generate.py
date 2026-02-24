@@ -66,9 +66,13 @@ def generate_image(
     """
     load_dotenv(override=True)
 
-    project = os.environ.get("GOOGLE_CLOUD_PROJECT") or os.environ.get("CLOUDSDK_CORE_PROJECT")
+    project = os.environ.get("GOOGLE_CLOUD_PROJECT") or os.environ.get(
+        "CLOUDSDK_CORE_PROJECT"
+    )
     if not project:
-        raise ValueError("GOOGLE_CLOUD_PROJECT or CLOUDSDK_CORE_PROJECT env var required")
+        raise ValueError(
+            "GOOGLE_CLOUD_PROJECT or CLOUDSDK_CORE_PROJECT env var required"
+        )
 
     client = genai.Client(
         vertexai=True,
@@ -84,12 +88,7 @@ def generate_image(
         parts.append(load_image_as_part(input_image))
     parts.append(types.Part.from_text(text=prompt))
 
-    contents = [
-        types.Content(
-            role="user",
-            parts=parts
-        )
-    ]
+    contents = [types.Content(role="user", parts=parts)]
 
     generate_content_config = types.GenerateContentConfig(
         temperature=1,
@@ -98,8 +97,12 @@ def generate_image(
         response_modalities=["IMAGE"],
         safety_settings=[
             types.SafetySetting(category="HARM_CATEGORY_HATE_SPEECH", threshold="OFF"),
-            types.SafetySetting(category="HARM_CATEGORY_DANGEROUS_CONTENT", threshold="OFF"),
-            types.SafetySetting(category="HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold="OFF"),
+            types.SafetySetting(
+                category="HARM_CATEGORY_DANGEROUS_CONTENT", threshold="OFF"
+            ),
+            types.SafetySetting(
+                category="HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold="OFF"
+            ),
             types.SafetySetting(category="HARM_CATEGORY_HARASSMENT", threshold="OFF"),
         ],
         image_config=types.ImageConfig(
@@ -115,40 +118,53 @@ def generate_image(
         config=generate_content_config,
     )
 
+    if response.candidates is None:
+        print(
+            f"DEBUG: Response has no candidates. Full response: {response}",
+            file=sys.stderr,
+        )
+        raise RuntimeError(
+            "Model returned no candidates. This could be due to safety filters or model refusal."
+        )
+
     # Extract image from response
-    for part in response.candidates[0].content.parts:
-        if part.inline_data is not None:
-            image_data = part.inline_data.data
-            mime_type = part.inline_data.mime_type
+    for candidate in response.candidates:
+        if candidate.content and candidate.content.parts:
+            for part in candidate.content.parts:
+                if part.inline_data is not None:
+                    image_data = part.inline_data.data
+                    mime_type = part.inline_data.mime_type
 
-            # Determine file extension from mime type
-            ext = ".png"
-            if mime_type == "image/jpeg":
-                ext = ".jpg"
-            elif mime_type == "image/webp":
-                ext = ".webp"
+                    # Determine file extension from mime type
+                    ext = ".png"
+                    if mime_type == "image/jpeg":
+                        ext = ".jpg"
+                    elif mime_type == "image/webp":
+                        ext = ".webp"
 
-            # Determine output path
-            if output_path:
-                save_path = Path(output_path)
-                if save_path.suffix == "":
-                    save_path = save_path.with_suffix(ext)
-            else:
-                fd, temp_path = tempfile.mkstemp(suffix=ext, prefix="gemini_image_")
-                os.close(fd)
-                save_path = Path(temp_path)
+                    # Determine output path
+                    if output_path:
+                        save_path = Path(output_path)
+                        if save_path.suffix == "":
+                            save_path = save_path.with_suffix(ext)
+                    else:
+                        fd, temp_path = tempfile.mkstemp(
+                            suffix=ext, prefix="gemini_image_"
+                        )
+                        os.close(fd)
+                        save_path = Path(temp_path)
 
-            # Decode and save
-            if isinstance(image_data, str):
-                image_bytes = base64.b64decode(image_data)
-            else:
-                image_bytes = image_data
+                    # Decode and save
+                    if isinstance(image_data, str):
+                        image_bytes = base64.b64decode(image_data)
+                    else:
+                        image_bytes = image_data
 
-            save_path.parent.mkdir(parents=True, exist_ok=True)
-            save_path.write_bytes(image_bytes)
+                    save_path.parent.mkdir(parents=True, exist_ok=True)
+                    save_path.write_bytes(image_bytes)
 
-            print(f"Image saved to: {save_path.absolute()}")
-            return str(save_path.absolute())
+                    print(f"Image saved to: {save_path.absolute()}")
+                    return str(save_path.absolute())
 
     raise RuntimeError("No image found in response")
 
@@ -156,9 +172,13 @@ def generate_image(
 def main():
     parser = argparse.ArgumentParser(description="Generate images with Gemini")
     parser.add_argument("prompt", help="Text description of the image to generate")
-    parser.add_argument("-i", "--input", help="Input image path for image-to-image generation")
+    parser.add_argument(
+        "-i", "--input", help="Input image path for image-to-image generation"
+    )
     parser.add_argument("-o", "--output", help="Output file path (optional)")
-    parser.add_argument("--aspect-ratio", default="16:9", help="Aspect ratio (default: 16:9)")
+    parser.add_argument(
+        "--aspect-ratio", default="16:9", help="Aspect ratio (default: 16:9)"
+    )
     parser.add_argument("--size", default="2K", choices=["1K", "2K"], help="Image size")
 
     args = parser.parse_args()
