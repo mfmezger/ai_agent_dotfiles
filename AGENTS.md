@@ -1,10 +1,12 @@
 # AI Agent Dotfiles - Agent Guidelines
 
-This is a dotfiles repository for AI coding tools (Claude Code, OpenCode), not a software project with build/test artifacts.
+This is a dotfiles repository for AI coding tools (Claude Code, OpenCode,
+Codex CLI, Gemini CLI), not a software project with build/test artifacts.
 
 ## Installation & Setup
 
 ### Installation Commands
+
 ```bash
 # Full installation (runs install.sh)
 ./install.sh
@@ -12,21 +14,25 @@ This is a dotfiles repository for AI coding tools (Claude Code, OpenCode), not a
 # Manual installation using stow
 stow claude      # Install Claude Code configs to ~/.claude/
 stow opencode    # Install OpenCode configs to ~/.config/opencode/
+stow codex       # Install Codex CLI configs to ~/.codex/
+stow gemini      # Install Gemini CLI configs to ~/.gemini/
 
 # Update symlinks after adding new files
-stow -R claude opencode
+stow -R claude opencode codex gemini
 
 # Unlink configs
-stow -D claude opencode
+stow -D claude opencode codex gemini
 ```
 
 ### Prerequisites
+
 - GNU Stow (macOS: `brew install stow`, Linux: `sudo apt install stow`)
 - Bash for install.sh script
 
 ## Code Style Guidelines
 
 ### Shell Scripts (install.sh)
+
 - Shebang: `#!/usr/bin/env bash`
 - Use `set -e` for error handling
 - Color output using ANSI codes (RED, GREEN, YELLOW, BLUE, NC)
@@ -37,6 +43,7 @@ stow -D claude opencode
 - Exit on errors: functions return non-zero to indicate failure
 
 ### Configuration Files (JSON, Markdown)
+
 - JSON: 2-space indentation, no trailing commas
 - Markdown: Use GitHub Flavored Markdown, line length ~80-100 chars
 - Paths in comments use absolute paths starting with `~` for user home
@@ -45,6 +52,7 @@ stow -D claude opencode
 ### Project-Specific Conventions
 
 #### Directory Structure
+
 ```
 claude/.claude/
 ├── settings.json       # User preferences
@@ -59,15 +67,30 @@ opencode/.config/opencode/
 ├── skills/            # Skills (directories with SKILL.md)
 ├── rules/             # Custom rules (.md files)
 └── README.md          # Config documentation
+
+codex/.codex/
+└── skills/            # Skills (directories with SKILL.md)
+
+gemini/.gemini/
+├── skills/            # Symlinks to shared skills
+└── commands/          # Custom command files (.md)
+
+shared/skills/
+└── <skill>/...        # Canonical skill source for all tools
+
+scripts/
+└── sync-skills.sh     # Syncs per-tool skill symlinks and Gemini commands
 ```
 
 #### File Naming
+
 - Agent files: `kebab-case.md` (e.g., `code-roaster.md`)
 - Skill directories: `kebab-case/` containing `SKILL.md`
 - Rule files: `kebab-case.md`
 - Config files: lowercase or camelCase as appropriate to format
 
 #### Content Guidelines for Agents/Skills/Rules
+
 - **Agents**: Subagents for specialized tasks. Include purpose, when to invoke, and tool access.
 - **Skills**: Invokable commands/reference material. Include metadata YAML block (name, description, license).
 - **Rules**: Always-loaded instructions. Include clear behavioral guidelines.
@@ -77,10 +100,13 @@ opencode/.config/opencode/
 ## Testing & Validation
 
 ### Manual Validation
+
 ```bash
 # Verify symlinks created correctly
 ls -la ~/.claude/
 ls -la ~/.config/opencode/
+ls -la ~/.codex/
+ls -la ~/.gemini/
 
 # Verify configs are valid JSON
 cat ~/.claude/settings.json | python -m json.tool
@@ -89,13 +115,31 @@ cat ~/.config/opencode/opencode.json | python -m json.tool
 # Test tools work
 claude --version    # If Claude Code CLI available
 opencode --help     # If OpenCode CLI available
+codex --help        # If Codex CLI available
+gemini --help       # If Gemini CLI available
+```
+
+### Cross-Agent Skill Sync Validation
+
+```bash
+# Regenerate files from shared source
+./scripts/sync-skills.sh
+
+# Validate symlinks and generated files are in sync
+./scripts/sync-skills.sh --check
+
+# Apply to home directory
+stow -R claude codex gemini
 ```
 
 ### Adding New Configs
-1. Create file in appropriate subdirectory (claude/.claude/ or opencode/.config/opencode/)
-2. Restow: `stow -R <package>`
-3. Verify symlink: `ls -la ~/.<target>/new-file`
-4. Test if applicable (launch Claude/OpenCode and verify config loaded)
+
+1. For shared skills, edit `shared/skills/<name>/SKILL.md` first.
+2. Run `./scripts/sync-skills.sh` to update tool-specific symlinks/files.
+3. For non-shared config, create file in the appropriate package subdirectory.
+4. Restow: `stow -R <package>`
+5. Verify symlink: `ls -la ~/.<target>/new-file`
+6. Test if applicable (launch Claude/OpenCode and verify config loaded)
 
 ## Important Constraints
 
@@ -108,6 +152,7 @@ opencode --help     # If OpenCode CLI available
 ## File Editing Guidelines
 
 ### Surgical Changes
+
 - Only edit config files as requested
 - Don't reformat unrelated config sections
 - Preserve existing JSON structure, keys, and values unless modifying them
@@ -115,6 +160,7 @@ opencode --help     # If OpenCode CLI available
 - Match existing indentation and spacing
 
 ### When Adding New Skills/Agents
+
 1. Check existing files for patterns
 2. Include required metadata in skills (YAML block at top)
 3. Provide clear instructions on when/how to invoke
@@ -126,3 +172,5 @@ opencode --help     # If OpenCode CLI available
 - [GNU Stow Manual](https://www.gnu.org/software/stow/manual/)
 - [Claude Code Documentation](https://github.com/anthropics/claude-code)
 - [OpenCode Documentation](https://opencode.ai/docs)
+- [Codex CLI Docs](https://developers.openai.com/codex/)
+- [Gemini CLI Docs](https://github.com/google-gemini/gemini-cli)
