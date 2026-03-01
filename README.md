@@ -24,6 +24,32 @@ stow gemini      # Installs to ~/.gemini/
 
 **Requirements**: [GNU Stow](https://www.gnu.org/software/stow/).
 
+## ▶️ Start Here (First Run)
+
+This repo is a dotfiles/config repo, so "starting the project" means installing
+the symlinks into your home directory and validating the tools can read them.
+
+```bash
+# 1) Enter the repo
+cd ~/ai_agent_dotfiles
+
+# 2) Install symlinks
+./install.sh
+
+# 3) Sync shared skills (recommended)
+./scripts/sync-skills.sh
+stow -R claude codex gemini
+
+# 4) Verify configs are linked
+ls -la ~/.claude/
+ls -la ~/.config/opencode/
+ls -la ~/.codex/
+ls -la ~/.gemini/
+```
+
+After that, start using your agent CLIs as normal (for example `codex --help`,
+`opencode --help`, or `gemini --help`) and they will load the installed config.
+
 ## 📂 Structure & Components
 
 The repository uses Stow to symlink configurations to their respective home directories.
