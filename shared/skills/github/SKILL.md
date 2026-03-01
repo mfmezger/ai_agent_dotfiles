@@ -1,6 +1,6 @@
 ---
 name: github
-description: Automates the end-to-end Git workflow: branch creation, staging, committing, pushing, and opening a GitHub pull request. Use when a feature or fix is ready for review and requires a structured PR.
+description: "Automates the end-to-end Git workflow: branch creation, staging, committing, pushing, and opening a GitHub pull request. Use when a feature or fix is ready for review and requires a structured PR."
 ---
 
 # GitHub Workflow
