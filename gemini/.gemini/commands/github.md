@@ -2,6 +2,7 @@
 description: Automates the end-to-end Git workflow: branch creation, staging, committing, pushing, and opening a GitHub pull request. Use when a feature or fix is ready for review and requires a structured PR.
 ---
 
+
 # GitHub Workflow
 
 This command guides the process of moving local changes to a GitHub Pull Request.

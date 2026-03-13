@@ -1,6 +1,7 @@
 ---
-description: Use this skill any time a .pptx file is involved in any way — as input, output, or both. This includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx file (even if the extracted content will be used elsewhere, like in an email or summary); editing, modifying, or updating existing presentations; combining or splitting slide files; working with templates, layouts, speaker notes, or comments. Trigger whenever the user mentions \"deck,\" \"slides,\" \"presentation,\" or references a .pptx filename, regardless of what they plan to do with the content afterward. If a .pptx file needs to be opened, created, or touched, use this skill.
+description: 'Use this skill any time a .pptx file is involved in any way — as input, output, or both. This includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx file (even if the extracted content will be used elsewhere, like in an email or summary); editing, modifying, or updating existing presentations; combining or splitting slide files; working with templates, layouts, speaker notes, or comments. Trigger whenever the user mentions "deck," "slides," "presentation," or references a .pptx filename, regardless of what they plan to do with the content afterward. If a .pptx file needs to be opened, created, or touched, use this skill.'
 ---
+
 
 # PPTX Skill
 
@@ -11,6 +12,7 @@ description: Use this skill any time a .pptx file is involved in any way — as 
 | Read/analyze content         | `python -m markitdown presentation.pptx` |
 | Edit or create from template | Read [editing.md](editing.md)            |
 | Create from scratch          | Read [pptxgenjs.md](pptxgenjs.md)        |
+
 
 ## Reading Content
 
@@ -25,6 +27,7 @@ python scripts/thumbnail.py presentation.pptx
 python scripts/office/unpack.py presentation.pptx unpacked/
 ```
 
+
 ## Editing Workflow
 
 **Read [editing.md](editing.md) for full details.**
@@ -32,11 +35,13 @@ python scripts/office/unpack.py presentation.pptx unpacked/
 1. Analyze template with `thumbnail.py`
 2. Unpack → manipulate slides → edit content → clean → pack
 
+
 ## Creating from Scratch
 
 **Read [pptxgenjs.md](pptxgenjs.md) for full details.**
 
 Use when no template or reference presentation is available.
+
 
 ## Design Ideas
 
@@ -129,6 +134,7 @@ Choose colors that match your topic — don't default to generic blue. Use these
 - **Don't use low-contrast elements** — icons AND text need strong contrast against the background; avoid light text on light backgrounds or dark text on dark backgrounds
 - **NEVER use accent lines under titles** — these are a hallmark of AI-generated slides; use whitespace or background color instead
 
+
 ## QA (Required)
 
 **Assume there are problems. Your job is to find them.**
@@ -193,6 +199,7 @@ Report ALL issues found, including minor ones.
 
 **Do not declare success until you've completed at least one fix-and-verify cycle.**
 
+
 ## Converting to Images
 
 Convert presentations to individual slide images for visual inspection:
@@ -209,6 +216,7 @@ To re-render specific slides after fixes:
 ```bash
 pdftoppm -jpeg -r 150 -f N -l N output.pdf slide-fixed
 ```
+
 
 ## Dependencies
 

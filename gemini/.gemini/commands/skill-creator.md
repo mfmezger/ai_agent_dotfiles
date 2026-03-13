@@ -2,6 +2,7 @@
 description: Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, update or optimize an existing skill, run evals to test a skill, benchmark skill performance with variance analysis, or optimize a skill's description for better triggering accuracy.
 ---
 
+
 # Skill Creator
 
 A skill for creating new skills and iteratively improving them.
@@ -38,6 +39,7 @@ So please pay attention to context cues to understand how to phrase your communi
 - for "JSON" and "assertion" you want to see serious cues from the user that they know what those things are before using them without explaining them
 
 It's OK to briefly explain terms if you're in doubt, and feel free to clarify terms with a short definition if you're unsure if the user will get it.
+
 
 ## Creating a skill
 
@@ -310,6 +312,7 @@ Kill the viewer server when you're done with it:
 kill $VIEWER_PID 2>/dev/null
 ```
 
+
 ## Improving the skill
 
 This is the heart of the loop. You've run the test cases, the user has reviewed the results, and now you need to make the skill better based on their feedback.
@@ -342,11 +345,13 @@ Keep going until:
 - The feedback is all empty (everything looks good)
 - You're not making meaningful progress
 
+
 ## Advanced: Blind comparison
 
 For situations where you want a more rigorous comparison between two versions of a skill (e.g., the user asks "is the new version actually better?"), there's a blind comparison system. Read `agents/comparator.md` and `agents/analyzer.md` for the details. The basic idea is: give two outputs to an independent agent without telling it which is which, and let it judge quality. Then analyze why the winner won.
 
 This is optional, requires subagents, and most users won't need it. The human review loop is usually sufficient.
+
 
 ## Description Optimization
 
@@ -421,6 +426,7 @@ This means your eval queries should be substantive enough that Claude would actu
 
 Take `best_description` from the JSON output and update the skill's SKILL.md frontmatter. Show the user before/after and report the scores.
 
+
 ### Package and Present (only if `present_files` tool is available)
 
 Check whether you have access to the `present_files` tool. If you don't, skip this step. If you do, package the skill and present the .skill file to the user:
@@ -430,6 +436,7 @@ python -m scripts.package_skill <path/to/skill-folder>
 ```
 
 After packaging, direct the user to the resulting `.skill` file path so they can install it.
+
 
 ## Claude.ai-specific instructions
 
@@ -449,6 +456,7 @@ In Claude.ai, the core workflow is the same (draft → test → review → impro
 
 **Packaging**: The `package_skill.py` script works anywhere with Python and a filesystem. On Claude.ai, you can run it and the user can download the resulting `.skill` file.
 
+
 ## Cowork-Specific Instructions
 
 If you're in Cowork, the main things to know are:
@@ -459,6 +467,7 @@ If you're in Cowork, the main things to know are:
 - Feedback works differently: since there's no running server, the viewer's "Submit All Reviews" button will download `feedback.json` as a file. You can then read it from there (you may have to request access first).
 - Packaging works — `package_skill.py` just needs Python and a filesystem.
 - Description optimization (`run_loop.py` / `run_eval.py`) should work in Cowork just fine since it uses `claude -p` via subprocess, not a browser, but please save it until you've fully finished making the skill and the user agrees it's in good shape.
+
 
 ## Reference files
 
@@ -471,6 +480,7 @@ The agents/ directory contains instructions for specialized subagents. Read them
 The references/ directory has additional documentation:
 
 - `references/schemas.md` — JSON structures for evals.json, grading.json, etc.
+
 
 Repeating one more time the core loop here for emphasis:
 

@@ -80,7 +80,7 @@ def generate_image(
         location="global",
     )
 
-    model = "gemini-3-pro-image-preview"  # Image generation model
+    model = "gemini-3.1-flash-image-preview"  # Image generation model
 
     # Build parts list - include input image if provided
     parts = []
