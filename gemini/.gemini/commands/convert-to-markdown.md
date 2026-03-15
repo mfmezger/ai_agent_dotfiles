@@ -2,6 +2,7 @@
 description: This skill should be used when the user asks to "convert a document to markdown", "extract text from PDF", "convert Word/PowerPoint/Excel to markdown", or needs to transform documents into markdown format.
 ---
 
+
 # Document to Markdown Converter
 
 Convert various document formats to Markdown using markitdown and pandoc.

@@ -2,6 +2,7 @@
 description: Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx files). Triggers include: any mention of 'Word doc', 'word document', '.docx', or requests to produce professional documents with formatting like tables of contents, headings, page numbers, or letterheads. Also use when extracting or reorganizing content from .docx files, inserting or replacing images in documents, performing find-and-replace in Word files, working with tracked changes or comments, or converting content into a polished Word document. If the user asks for a 'report', 'memo', 'letter', 'template', or similar deliverable as a Word or .docx file, use this skill. Do NOT use for PDFs, spreadsheets, Google Docs, or general coding tasks unrelated to document generation.
 ---
 
+
 # DOCX creation, editing, and analysis
 
 ## Overview
@@ -48,6 +49,7 @@ To produce a clean document with all tracked changes accepted (requires LibreOff
 ```bash
 python scripts/accept_changes.py input.docx output.docx
 ```
+
 
 ## Creating New Documents
 
@@ -513,6 +515,7 @@ sections: [
 - **Override built-in styles** - use exact IDs: "Heading1", "Heading2", etc.
 - **Include `outlineLevel`** - required for TOC (0 for H1, 1 for H2, etc.)
 
+
 ## Editing Existing Documents
 
 **Follow all 3 steps in order.**
@@ -578,6 +581,7 @@ Validates with auto-repair, condenses XML, and creates DOCX. Use `--validate fal
 
 - **Replace entire `<w:r>` elements**: When adding tracked changes, replace the whole `<w:r>...</w:r>` block with `<w:del>...<w:ins>...` as siblings. Don't inject tracked change tags inside a run.
 - **Preserve `<w:rPr>` formatting**: Copy the original run's `<w:rPr>` block into your tracked change runs to maintain bold, font size, etc.
+
 
 ## XML Reference
 
@@ -717,6 +721,7 @@ After running `comment.py` (see Step 2), add markers to document.xml. For replie
   </wp:inline>
 </w:drawing>
 ```
+
 
 ## Dependencies
 

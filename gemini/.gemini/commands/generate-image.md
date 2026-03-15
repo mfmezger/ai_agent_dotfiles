@@ -2,6 +2,7 @@
 description: This skill should be used when the user asks to "generate an image", "create a picture", "make an image of", "edit this image", "transform this photo", or needs AI-generated visual content using Google's Gemini image generation model.
 ---
 
+
 # Image Generation with Gemini
 
 Generate images using Google's Gemini image generation model via Vertex AI. Supports both text-to-image and image-to-image generation.
@@ -66,8 +67,45 @@ uvx --with google-genai --with python-dotenv python ~/.claude/skills/generate-im
 3. Use Read tool to view the generated image
 4. Move/copy to user-specified location if requested
 
+## Batch Generation
+
+Generate multiple images in parallel using the batch script (uv inline script):
+
+```bash
+# Multiple prompts as arguments
+uv run ~/.claude/skills/generate-image/scripts/generate_batch.py "A sunset over mountains" "A robot in a garden" "A cat astronaut"
+
+# Read prompts from a file (one per line, # comments ignored)
+uv run ~/.claude/skills/generate-image/scripts/generate_batch.py --from-file prompts.txt
+
+# Save to a specific directory
+uv run ~/.claude/skills/generate-image/scripts/generate_batch.py -o ./images "prompt1" "prompt2"
+
+# Control concurrency (default: 4)
+uv run ~/.claude/skills/generate-image/scripts/generate_batch.py -c 2 "prompt1" "prompt2" "prompt3"
+
+# Combine file + CLI prompts, custom aspect ratio
+uv run ~/.claude/skills/generate-image/scripts/generate_batch.py -f prompts.txt -a 1:1 -s 2K "extra prompt"
+
+# Image-to-image batch (same input image, multiple transformations)
+uv run ~/.claude/skills/generate-image/scripts/generate_batch.py -i ./photo.jpg "Make it nighttime" "Add rain" "Watercolor style"
+```
+
+### Batch Options
+
+| Flag                          | Description                                  | Default   |
+| ----------------------------- | -------------------------------------------- | --------- |
+| `prompts` (positional)        | One or more text prompts                     | -         |
+| `-f, --from-file PATH`       | Read prompts from a text file (one per line) | None      |
+| `-o, --output-dir DIR`       | Directory to save images                     | Temp dir  |
+| `-i, --input-image PATH`     | Input image for image-to-image (all prompts) | None      |
+| `-a, --aspect-ratio`         | "16:9", "1:1", "9:16"                        | "16:9"    |
+| `-s, --size`                 | "1K" or "2K"                                 | "2K"      |
+| `-c, --max-concurrent`       | Max parallel API requests (semaphore)        | 4         |
+
 ## Error Handling
 
 - Missing env vars: Script errors with clear message about which variable is needed
 - Input image not found: Script errors if the specified input image path doesn't exist
 - Generation failure: Script returns non-zero exit code with error details
+- Batch mode: Reports per-prompt success/failure and exits with code 1 if any failed

@@ -2,6 +2,7 @@
 description: This skill should be used when the user asks to "get Jira issue", "create Jira ticket", "search Jira", "update issue status", or needs to interact with Jira Data Center/Server instances.
 ---
 
+
 # Jira Data Center
 
 Interact with Jira Data Center/Server instances via REST API.

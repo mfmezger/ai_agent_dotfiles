@@ -2,6 +2,7 @@
 description: This skill should be used when the user asks to "get Confluence page", "create Confluence page", "search Confluence", "update wiki page", or needs to interact with Confluence Data Center/Server instances.
 ---
 
+
 # Confluence Data Center
 
 Interact with Confluence Data Center/Server instances via REST API.

@@ -2,11 +2,13 @@
 description: Guide for creating high-quality MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools. Use when building MCP servers to integrate external APIs or services, whether in Python (FastMCP) or Node/TypeScript (MCP SDK).
 ---
 
+
 # MCP Server Development Guide
 
 ## Overview
 
 Create MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools. The quality of an MCP server is measured by how well it enables LLMs to accomplish real-world tasks.
+
 
 # Process
 
@@ -73,6 +75,7 @@ Review the service's API documentation to identify key endpoints, authentication
 **Tool Selection:**
 Prioritize comprehensive API coverage. List endpoints to implement, starting with the most common operations.
 
+
 ### Phase 2: Implementation
 
 #### 2.1 Set Up Project Structure
@@ -127,6 +130,7 @@ For each tool:
 - `idempotentHint`: true/false
 - `openWorldHint`: true/false
 
+
 ### Phase 3: Review and Test
 
 #### 3.1 Code Quality
@@ -151,6 +155,7 @@ Review for:
 - Test with MCP Inspector
 
 See language-specific guides for detailed testing approaches and quality checklists.
+
 
 ### Phase 4: Create Evaluations
 
@@ -195,6 +200,7 @@ Create an XML file with this structure:
 <!-- More qa_pairs... -->
 </evaluation>
 ```
+
 
 # Reference Files
 
