@@ -1,0 +1,29 @@
+prefix_rule(
+    pattern = ["git", "add"],
+    decision = "prompt",
+    justification = "Always ask before staging changes.",
+    match = [
+        "git add .",
+        "git add README.md",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "commit"],
+    decision = "prompt",
+    justification = "Always ask before creating commits.",
+    match = [
+        "git commit -m test",
+        "git commit --amend -m test",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "push"],
+    decision = "prompt",
+    justification = "Always ask before pushing changes to a remote.",
+    match = [
+        "git push",
+        "git push origin main",
+    ],
+)
