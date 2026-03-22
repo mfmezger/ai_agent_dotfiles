@@ -1,11 +1,26 @@
 prefix_rule(
+    pattern = ["uv", "run", "pytest"],
+    decision = "allow",
+)
+
+prefix_rule(
+    pattern = ["make", "test-vcr"],
+    decision = "allow",
+)
+
+prefix_rule(
     pattern = ["git", "add"],
-    decision = "prompt",
-    justification = "Always ask before staging changes.",
-    match = [
-        "git add .",
-        "git add README.md",
-    ],
+    decision = "allow",
+)
+
+prefix_rule(
+    pattern = ["cargo", "build"],
+    decision = "allow",
+)
+
+prefix_rule(
+    pattern = ["cargo", "update"],
+    decision = "allow",
 )
 
 prefix_rule(
