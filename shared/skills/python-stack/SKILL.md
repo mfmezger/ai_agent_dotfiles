@@ -1,11 +1,15 @@
 ---
 name: python-stack
-description: "Standard Python engineering stack and tooling conventions. Use this skill whenever starting a new Python project, setting up dependencies, configuring linting/testing/CI, choosing between frameworks or libraries, or when the user asks about Python project structure, tooling choices, or best practices. Also trigger when the user mentions any of these tools: uv, uvx, ruff, ty, pytest, FastAPI, SQLModel, SQLAlchemy, Pydantic, Typer, or pre-commit in a Python context."
+description: "Standard Python engineering stack and tooling conventions. Use this skill whenever starting a new Python project, setting up dependencies, configuring linting/testing/CI, choosing between frameworks or libraries, or when the user asks about Python project structure, tooling choices, or best practices. Also trigger when the user mentions any of these tools: uv, uvx, ruff, ty, pytest, FastAPI, SQLModel, SQLAlchemy, Pydantic, Typer, prek, or pre-commit in a Python context."
 ---
 
 # Python Engineering Stack
 
 Standard tooling and conventions for Python projects. When making recommendations or scaffolding projects, prefer these tools over alternatives unless the user explicitly requests otherwise.
+
+## Python Version
+
+Use **Python 3.13** or **3.14**. Target the latest stable release for new projects.
 
 ## Package and Dependency Management
 
@@ -18,7 +22,38 @@ Standard tooling and conventions for Python projects. When making recommendation
 - Use `uvx` to run CLI tools without installing them (e.g., `uvx ruff check`, `uvx ty`)
 - `pyproject.toml` is the single source of truth for project metadata and dependencies
 
+## Coding Standards
+
+### MUST DO
+
+- Type hints for all function signatures and class attributes
+- Use `X | None` instead of `Optional[X]` (Python 3.10+)
+- PEP 8 compliance (enforced via ruff)
+- Comprehensive docstrings in Google style for public APIs
+- Test coverage exceeding 90% with pytest
+- Async/await for I/O-bound operations
+- Dataclasses over manual `__init__` methods (or Pydantic models when validation is needed)
+- Context managers for resource handling
+
+### MUST NOT DO
+
+- Skip type annotations on public APIs
+- Use mutable default arguments
+- Mix sync and async code improperly
+- Ignore ty errors in strict mode
+- Use bare `except:` clauses
+- Hardcode secrets or configuration (use pydantic-settings)
+- Use deprecated stdlib modules (use `pathlib` not `os.path`)
+
 ## Code Quality
+
+### File Paths — pathlib
+
+Always use `pathlib.Path` for file and directory operations. Do not use `os.path` or string manipulation for paths.
+
+### Console Output — Rich
+
+Use **Rich** for terminal output, including formatted text, tables, and progress bars. Use `rich.progress` as the default for progress indicators.
 
 ### Data Validation — Pydantic
 
@@ -44,9 +79,14 @@ select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
 
 ty is the standard type checker.
 
-### Pre-commit
+### Pre-commit — prek
 
-pre-commit is the standard framework for enforcing checks before committing. A typical `.pre-commit-config.yaml` includes hooks for ruff (lint + format) and ty.
+**prek** is the standard pre-commit framework (replaces `pre-commit`). It uses the same `.pre-commit-config.yaml` format but is faster and written in Rust.
+
+- Install with `uvx prek install`
+- Uses the same `.pre-commit-config.yaml` config file
+- A typical config includes hooks for ruff (lint + format) and ty
+- Reference example: [conversational-agent-langchain/.pre-commit-config.yaml](https://github.com/mfmezger/conversational-agent-langchain/blob/migrate-precommit-to-prek-7280253721743533025/.pre-commit-config.yaml)
 
 ## Testing
 
@@ -133,10 +173,9 @@ When a CLI is needed:
 ```bash
 uv init my-project
 cd my-project
-uv add ruff pytest inline-snapshot pytest-recording pydantic
+uv add ruff pytest inline-snapshot pytest-recording pydantic rich
 # For API projects:
 uv add fastapi uvicorn sqlmodel pydantic-settings
-# Set up pre-commit:
-uv add --dev pre-commit
-uv run pre-commit install
+# Set up prek:
+uvx prek install
 ```
