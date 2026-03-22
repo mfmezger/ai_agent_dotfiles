@@ -93,6 +93,7 @@ Prefer SQLModel for new FastAPI projects. Fall back to SQLAlchemy when you need 
 **Pydantic Settings** (`pydantic-settings`) is the standard for configuration and settings management. Use `BaseSettings` with environment variable loading.
 
 ```python
+from pydantic import SettingsConfigDict
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
