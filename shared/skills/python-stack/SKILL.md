@@ -1,6 +1,6 @@
 ---
 name: python-stack
-description: "Standard Python engineering stack and tooling conventions. Use this skill whenever starting a new Python project, setting up dependencies, configuring linting/testing/CI, choosing between frameworks or libraries, or when the user asks about Python project structure, tooling choices, or best practices. Also trigger when the user mentions any of these tools: uv, ruff, ty, pytest, FastAPI, SQLModel, SQLAlchemy, Pydantic, Typer, commitizen, or pre-commit in a Python context."
+description: "Standard Python engineering stack and tooling conventions. Use this skill whenever starting a new Python project, setting up dependencies, configuring linting/testing/CI, choosing between frameworks or libraries, or when the user asks about Python project structure, tooling choices, or best practices. Also trigger when the user mentions any of these tools: uv, uvx, ruff, ty, pytest, FastAPI, SQLModel, SQLAlchemy, Pydantic, Typer, or pre-commit in a Python context."
 ---
 
 # Python Engineering Stack
@@ -15,6 +15,7 @@ Standard tooling and conventions for Python projects. When making recommendation
 - Use `uv add <package>` to add dependencies (not `pip install`)
 - Use `uv sync` to install from lockfile
 - Use `uv run` to execute scripts/commands in the project environment
+- Use `uvx` to run CLI tools without installing them (e.g., `uvx ruff check`, `uvx ty`)
 - `pyproject.toml` is the single source of truth for project metadata and dependencies
 
 ## Code Quality
@@ -27,16 +28,15 @@ Use Pydantic models for all data validation and serialization. Prefer Pydantic v
 
 Ruff is the standard linter and formatter (replaces Black, isort, flake8, pylint).
 
-- Configure in `pyproject.toml` under `[tool.ruff]`
+- Configure in `ruff.toml` (not `pyproject.toml`)
 - Use `ruff check` for linting, `ruff format` for formatting
-- Typical config:
+- Typical `ruff.toml`:
 
 ```toml
-[tool.ruff]
 target-version = "py310"
 line-length = 120
 
-[tool.ruff.lint]
+[lint]
 select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
 ```
 
@@ -56,20 +56,38 @@ pre-commit is the standard framework for enforcing checks before committing. A t
 - Use `uv run pytest` to run tests
 - Use fixtures, parametrize, and clear test naming (`test_<what>_<condition>_<expected>`)
 
-## Git and CI/CD Workflow
+### Snapshot Testing — inline-snapshot
 
-### Commit Messages — Conventional Commits via Commitizen
+Use **inline-snapshot** for snapshot/golden-master testing. Snapshots live directly in the test source code, not in separate files.
 
-- Follow Conventional Commits format: `<type>(<scope>): <summary>`
-- Use **Commitizen** (`cz commit`) to enforce this standard
-- Configure in `pyproject.toml`:
+```python
+from inline_snapshot import snapshot
 
-```toml
-[tool.commitizen]
-name = "cz_conventional_commits"
-version_provider = "pep621"
-update_changelog_on_bump = true
+def test_example():
+    assert 1 + 1 == snapshot(2)
 ```
+
+- Write tests with empty `snapshot()` calls, then run `pytest --inline-snapshot=create` to fill them in
+- Run `pytest --inline-snapshot=fix` to update stale snapshots after code changes
+- Review changes with `git diff` before committing
+
+### HTTP Recording — pytest-recording
+
+Use **pytest-recording** (built on VCR.py) to record and replay HTTP interactions in tests, avoiding live API calls in CI.
+
+- Mark tests with `@pytest.mark.vcr` to record/replay HTTP cassettes
+- Cassettes are stored in `tests/cassettes/` by default
+- Re-record with `pytest --vcr-record=all`
+
+## Git Workflow
+
+### Commit Messages — Conventional Commits
+
+Follow the Conventional Commits format: `<type>(<scope>): <summary>`
+
+Common types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`, `perf`.
+
+See the `/commit` skill for the full commit workflow.
 
 ## API Frameworks
 
@@ -115,10 +133,10 @@ When a CLI is needed:
 ```bash
 uv init my-project
 cd my-project
-uv add ruff pytest pydantic
+uv add ruff pytest inline-snapshot pytest-recording pydantic
 # For API projects:
 uv add fastapi uvicorn sqlmodel pydantic-settings
 # Set up pre-commit:
-uv add --dev pre-commit commitizen
+uv add --dev pre-commit
 uv run pre-commit install
 ```
