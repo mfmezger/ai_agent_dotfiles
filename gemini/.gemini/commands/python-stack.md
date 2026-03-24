@@ -1,7 +1,7 @@
 ---
-name: python-stack
-description: "Standard Python engineering stack and tooling conventions. Use this skill whenever starting a new Python project, setting up dependencies, configuring linting/testing/CI, choosing between frameworks or libraries, or when the user asks about Python project structure, tooling choices, or best practices. Also trigger when the user mentions any of these tools: uv, uvx, ruff, ty, pytest, SQLModel, SQLAlchemy, Pydantic, Typer, prek, or pre-commit in a Python context. For FastAPI-specific application structure and endpoint conventions, use the separate `fastapi` skill."
+description: Standard Python engineering stack and tooling conventions. Use this skill whenever starting a new Python project, setting up dependencies, configuring linting/testing/CI, choosing between frameworks or libraries, or when the user asks about Python project structure, tooling choices, or best practices. Also trigger when the user mentions any of these tools: uv, uvx, ruff, ty, pytest, SQLModel, SQLAlchemy, Pydantic, Typer, prek, or pre-commit in a Python context. For FastAPI-specific application structure and endpoint conventions, use the separate `fastapi` skill.
 ---
+
 
 # Python Engineering Stack
 
