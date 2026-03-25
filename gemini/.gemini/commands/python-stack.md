@@ -68,7 +68,7 @@ Ruff is the standard linter and formatter (replaces Black, isort, flake8, pylint
 - Typical `ruff.toml`:
 
 ```toml
-target-version = "py310"
+target-version = "py313"
 line-length = 120
 
 [lint]
