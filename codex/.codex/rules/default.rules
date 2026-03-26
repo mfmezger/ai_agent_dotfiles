@@ -42,3 +42,4 @@ prefix_rule(
         "git push origin main",
     ],
 )
+prefix_rule(pattern=["uv", "run", "python"], decision="allow")
