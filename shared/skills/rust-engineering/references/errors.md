@@ -20,7 +20,7 @@ use thiserror::Error;
 pub enum ConfigError {
     #[error("failed to read config from {path}")]
     Read {
-        path: String,
+        path: std::path::PathBuf,
         #[source]
         source: std::io::Error,
     },

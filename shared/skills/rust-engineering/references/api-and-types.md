@@ -37,14 +37,20 @@ pub struct UserId(String);
 Validate at the boundary instead of scattering checks:
 
 ```rust
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+pub enum ParseError {
+    #[error("name must not be empty")]
+    Empty,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NonEmptyName(String);
 
 impl NonEmptyName {
-    pub fn parse(value: impl Into<String>) -> Result<Self, &'static str> {
+    pub fn parse(value: impl Into<String>) -> Result<Self, ParseError> {
         let value = value.into();
         if value.trim().is_empty() {
-            return Err("name must not be empty");
+            return Err(ParseError::Empty);
         }
         Ok(Self(value))
     }

@@ -67,10 +67,17 @@ use std::fs;
 use std::io::Write;
 
 fn write_atomic(path: &std::path::Path, contents: &[u8]) -> anyhow::Result<()> {
-    let parent = path.parent().ok_or_else(|| anyhow::anyhow!("missing parent directory"))?;
-    fs::create_dir_all(parent)?;
+    let parent = path
+        .parent()
+        .ok_or_else(|| anyhow::anyhow!("path has no parent directory"))?;
+    let parent_dir = if parent.as_os_str().is_empty() {
+        std::path::Path::new(".")
+    } else {
+        parent
+    };
+    fs::create_dir_all(parent_dir)?;
 
-    let mut temp = tempfile::NamedTempFile::new_in(parent)?;
+    let mut temp = tempfile::NamedTempFile::new_in(parent_dir)?;
     temp.write_all(contents)?;
     temp.flush()?;
     temp.persist(path)?;
