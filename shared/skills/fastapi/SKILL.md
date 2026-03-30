@@ -160,3 +160,7 @@ When reviewing FastAPI code, look for:
 - Routers assembled inconsistently
 - Raw ORM models leaking through the API boundary
 - Old parameter style without `Annotated`
+
+## Sources
+
+- Official FastAPI repository: https://github.com/fastapi/fastapi

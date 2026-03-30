@@ -1,5 +1,5 @@
 ---
-description: Standard Python engineering stack and tooling conventions. Use this skill whenever starting a new Python project, setting up dependencies, configuring linting/testing/CI, choosing between frameworks or libraries, or when the user asks about Python project structure, tooling choices, or best practices. Also trigger when the user mentions any of these tools: uv, uvx, ruff, ty, pytest, SQLModel, SQLAlchemy, Pydantic, Typer, prek, or pre-commit in a Python context. For FastAPI-specific application structure and endpoint conventions, use the separate `fastapi` skill.
+description: Standard Python engineering stack and tooling conventions. Use this skill whenever starting a new Python project, setting up dependencies, configuring linting/testing/CI, choosing between frameworks or libraries, or when the user asks about Python project structure, tooling choices, or best practices. Also trigger when the user mentions any of these tools: uv, uvx, ruff, ty, pytest, FastAPI, SQLModel, SQLAlchemy, Pydantic, Typer, loguru, prek, or pre-commit in a Python context. For FastAPI-specific application structure and endpoint conventions, use the separate `fastapi` skill.
 ---
 
 
@@ -54,6 +54,15 @@ Always use `pathlib.Path` for file and directory operations. Do not use `os.path
 ### Console Output — Rich
 
 Use **Rich** for terminal output, including formatted text, tables, and progress bars. Use `rich.progress` as the default for progress indicators.
+
+### Logging — Loguru
+
+Use **Loguru** for application logging. Prefer structured, contextual logs over ad hoc `print()` debugging.
+
+- Add `loguru` as a dependency when the project needs logging
+- Create module-level loggers with `from loguru import logger`
+- Bind contextual fields for request IDs, user IDs, job IDs, and similar metadata
+- Use stdlib `logging` only when required by a framework or library integration
 
 ### Data Validation — Pydantic
 
@@ -174,7 +183,7 @@ When a CLI is needed:
 ```bash
 uv init my-project
 cd my-project
-uv add ruff pytest inline-snapshot pytest-recording pydantic rich
+uv add ruff pytest inline-snapshot pytest-recording pydantic rich loguru
 # For API projects:
 uv add fastapi uvicorn sqlmodel pydantic-settings
 # Set up prek:

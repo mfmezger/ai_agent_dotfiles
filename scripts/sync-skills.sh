@@ -124,6 +124,30 @@ cleanup_stale_links() {
   return "$failed"
 }
 
+cleanup_stale_commands() {
+  local commands_dir="$1"
+  local failed=0
+
+  mkdir -p "$commands_dir"
+
+  for entry in "$commands_dir"/*.md; do
+    [[ -e "$entry" || -L "$entry" ]] || continue
+    local name
+    name="$(basename "$entry" .md)"
+    if [[ ! -d "$ROOT_DIR/shared/skills/$name" ]]; then
+      if [[ "$MODE" == "--check" ]]; then
+        echo "Stale entry: $entry"
+        failed=1
+      else
+        rm -f "$entry"
+        echo "Removed stale: $entry"
+      fi
+    fi
+  done
+
+  return "$failed"
+}
+
 sync_failed=0
 
 for source_file in "$ROOT_DIR"/shared/skills/*/SKILL.md; do
@@ -164,6 +188,9 @@ if ! cleanup_stale_links "$ROOT_DIR/codex/.codex/skills"; then
   sync_failed=1
 fi
 if ! cleanup_stale_links "$ROOT_DIR/gemini/.gemini/skills"; then
+  sync_failed=1
+fi
+if ! cleanup_stale_commands "$ROOT_DIR/gemini/.gemini/commands"; then
   sync_failed=1
 fi
 
