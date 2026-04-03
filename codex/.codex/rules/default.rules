@@ -43,3 +43,6 @@ prefix_rule(
     ],
 )
 prefix_rule(pattern=["uv", "run", "python"], decision="allow")
+prefix_rule(pattern=["curl", "-sL", "https://api.github.com/repos/pollen-robotics/reachy_mini/git/trees/main?recursive=1"], decision="allow")
+prefix_rule(pattern=["cargo", "test"], decision="allow")
+prefix_rule(pattern=["gh"], decision="allow")
