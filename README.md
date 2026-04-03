@@ -1,7 +1,7 @@
 # 🤖 AI Agent Dotfiles
 
 Personal configuration files for AI coding agents and tools (**Claude Code**,
-**OpenCode**, **Codex CLI**, and **Gemini CLI**).
+**OpenCode**, **Codex CLI**, **Gemini CLI**, and **pi coding agent**).
 
 > **Note**: This is a companion to my [main dotfiles repository](https://github.com/mfmezger/dotfiles), kept separate for personal use.
 
@@ -20,6 +20,7 @@ stow claude      # Installs to ~/.claude/
 stow opencode    # Installs to ~/.config/opencode/
 stow codex       # Installs to ~/.codex/
 stow gemini      # Installs to ~/.gemini/
+stow pi          # Installs to ~/.pi/
 ```
 
 **Requirements**: [GNU Stow](https://www.gnu.org/software/stow/).
@@ -38,13 +39,14 @@ cd ~/ai_agent_dotfiles
 
 # 3) Sync shared skills (recommended)
 ./scripts/sync-skills.sh
-stow -R claude codex gemini
+stow -R claude codex gemini pi
 
 # 4) Verify configs are linked
 ls -la ~/.claude/
 ls -la ~/.config/opencode/
 ls -la ~/.codex/
 ls -la ~/.gemini/
+ls -la ~/.pi/agent/
 ```
 
 After that, start using your agent CLIs as normal (for example `codex --help`,
@@ -60,6 +62,7 @@ The repository uses Stow to symlink configurations to their respective home dire
 ├── opencode/ (.config/)     # Configs, Agents, Skills, Rules for OpenCode
 ├── codex/ (.codex/)         # Skills and config for Codex CLI
 ├── gemini/ (.gemini/)       # Custom commands for Gemini CLI
+├── pi/ (.pi/)               # Settings for pi coding agent
 └── install.sh               # Setup script
 ```
 
@@ -72,12 +75,19 @@ The repository uses Stow to symlink configurations to their respective home dire
 ## 🛠️ Usage & Workflow
 
 - **Update Configs**: Edit files in `~/ai_agent_dotfiles/` and changes are immediately reflected in your home directory (via symlinks).
-- **Refresh Links**: Run `stow -R claude opencode codex gemini` if you add new
-  files.
-- **Remove**: Run `stow -D claude opencode codex gemini` to unlink.
+- **Refresh Links**: Run `stow -R claude opencode codex gemini pi` if you add
+  new files.
+- **Remove**: Run `stow -D claude opencode codex gemini pi` to unlink.
 - **Secrets**: Create `~/.claude.json` manually for API keys and sensitive tokens (never commit them).
 
 ## 📍 Skill/Command Locations
+
+- **pi skills**: This repo configures pi via `~/.pi/agent/settings.json` to load
+  canonical shared skills from `~/ai_agent_dotfiles/shared/skills/` using a
+  home-relative path so it is portable across your machines.
+- **pi config**: Track pi settings in `pi/.pi/agent/settings.json`, which stows
+  to `~/.pi/agent/settings.json`.
+
 
 - **Codex CLI skills**: Put skill folders in `~/.codex/skills/` globally, or in
   `./.codex/skills/` for a project-specific skill.
@@ -104,6 +114,8 @@ To keep the same skill behavior across Claude, Codex, and Gemini:
 
 Managed targets:
 
+- `pi/.pi/agent/settings.json` -> `~/.pi/agent/settings.json` (loads shared pi skills from `~/ai_agent_dotfiles/shared/skills`)
+
 - `claude/.claude/skills/<skill-name>` -> symlink to `shared/skills/<skill-name>`
 - `codex/.codex/skills/<skill-name>` -> symlink to `shared/skills/<skill-name>`
 - `gemini/.gemini/skills/<skill-name>` -> symlink to `shared/skills/<skill-name>`
@@ -116,7 +128,7 @@ Managed targets:
 ./scripts/sync-skills.sh
 
 # 2) Restow into your home directory
-stow -R claude codex gemini
+stow -R claude codex gemini pi
 
 # 3) Verify links
 ls -la ~/.claude/skills/github/SKILL.md
@@ -140,6 +152,7 @@ ls -la ~/skills
 - [OpenCode Docs](https://opencode.ai/docs)
 - [Codex CLI Docs](https://developers.openai.com/codex/)
 - [Gemini CLI Docs](https://github.com/google-gemini/gemini-cli)
+- [pi Coding Agent Docs](https://github.com/badlogic/pi-mono)
 - [GNU Stow Manual](https://www.gnu.org/software/stow/manual/)
 
 **License**: MIT.

@@ -56,6 +56,8 @@ stow_package() {
                 mv ~/.codex ~/.codex.backup."$(date +%s)" 2>/dev/null || true
             elif [ "$package" = "gemini" ]; then
                 mv ~/.gemini ~/.gemini.backup."$(date +%s)" 2>/dev/null || true
+            elif [ "$package" = "pi" ]; then
+                mv ~/.pi ~/.pi.backup."$(date +%s)" 2>/dev/null || true
             fi
             stow -v -d "$DOTFILES_DIR" -t "$HOME" "$package"
             echo -e "${GREEN}  ✓ Installed (after backup)${NC}"
@@ -75,6 +77,7 @@ stow_package "claude" "Claude Code configs → ~/.claude/"
 stow_package "opencode" "OpenCode configs → ~/.config/opencode/"
 stow_package "codex" "Codex CLI configs → ~/.codex/"
 stow_package "gemini" "Gemini CLI configs → ~/.gemini/"
+stow_package "pi" "pi coding agent configs → ~/.pi/"
 
 echo -e "${BLUE}======================================${NC}"
 echo -e "${GREEN}Installation Complete!${NC}"
@@ -91,11 +94,13 @@ echo "   ls -la ~/.claude/"
 echo "   ls -la ~/.config/opencode/"
 echo "   ls -la ~/.codex/"
 echo "   ls -la ~/.gemini/"
+echo "   ls -la ~/.pi/agent/"
 echo ""
 echo "3. ${YELLOW}Start using:${NC}"
 echo "   claude      # Launch Claude Code"
 echo "   opencode    # Launch OpenCode"
 echo "   codex       # Launch Codex CLI"
 echo "   gemini      # Launch Gemini CLI"
+echo "   pi          # Launch pi coding agent"
 echo ""
 echo -e "${GREEN}Enjoy your AI coding agents!${NC}"
