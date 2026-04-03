@@ -1,0 +1,7 @@
+{
+  "lastChangelogVersion": "0.64.0",
+  "skills": [
+    "~/ai_agent_dotfiles/shared/skills"
+  ],
+  "enableSkillCommands": true
+}
