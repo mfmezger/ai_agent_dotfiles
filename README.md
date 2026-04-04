@@ -25,6 +25,11 @@ stow pi          # Installs to ~/.pi/
 
 **Requirements**: [GNU Stow](https://www.gnu.org/software/stow/).
 
+> **Note**: If you already use pi, you may already have a real
+> `~/.pi/agent/settings.json` file. Stow will not overwrite existing files.
+> The installer now detects this and offers to back up `~/.pi` before
+> continuing.
+
 ## ▶️ Start Here (First Run)
 
 This repo is a dotfiles/config repo, so "starting the project" means installing
@@ -36,6 +41,9 @@ cd ~/ai_agent_dotfiles
 
 # 2) Install symlinks
 ./install.sh
+
+# If pi already has local state/config, the installer may prompt to back up
+# ~/.pi before stowing the repo-managed settings.json symlink.
 
 # 3) Sync shared skills (recommended)
 ./scripts/sync-skills.sh

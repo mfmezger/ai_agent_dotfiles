@@ -33,41 +33,52 @@ echo ""
 stow_package() {
     local package=$1
     local description=$2
+    local dry_run_output
+    local backup_target
+    local timestamp
 
     echo -e "${YELLOW}Installing ${package}...${NC} ${description}"
 
-    if stow -v -d "$DOTFILES_DIR" -t "$HOME" "$package" 2>&1 | grep -q "CONFLICT"; then
-        echo -e "${RED}  ✗ Conflict detected${NC}"
+    if dry_run_output="$(stow -n -v -d "$DOTFILES_DIR" -t "$HOME" "$package" 2>&1)"; then
+        stow -d "$DOTFILES_DIR" -t "$HOME" "$package"
+        echo -e "${GREEN}  ✓ Installed${NC}"
+    else
+        echo -e "${RED}  ✗ Stow detected a conflict or other install problem${NC}"
+        echo ""
+        echo "$dry_run_output"
         echo ""
         echo "  Existing files/directories conflict with $package"
         echo "  Options:"
-        echo "    1. Backup existing files: mv ~/.$package ~/.$package.backup"
-        echo "    2. Force overwrite: stow -D $package && stow $package"
-        echo "    3. Skip this package"
+        echo "    1. Backup existing files and continue"
+        echo "    2. Skip this package"
         echo ""
         read -p "  Backup and continue? [y/N] " -n 1 -r
         echo
         if [[ $REPLY =~ ^[Yy]$ ]]; then
-            if [ "$package" = "claude" ]; then
-                mv ~/.claude ~/.claude.backup."$(date +%s)" 2>/dev/null || true
-            elif [ "$package" = "opencode" ]; then
-                mv ~/.config/opencode ~/.config/opencode.backup."$(date +%s)" 2>/dev/null || true
-            elif [ "$package" = "codex" ]; then
-                mv ~/.codex ~/.codex.backup."$(date +%s)" 2>/dev/null || true
-            elif [ "$package" = "gemini" ]; then
-                mv ~/.gemini ~/.gemini.backup."$(date +%s)" 2>/dev/null || true
-            elif [ "$package" = "pi" ]; then
-                mv ~/.pi ~/.pi.backup."$(date +%s)" 2>/dev/null || true
+            timestamp="$(date +%s)"
+            if [[ "$package" = "claude" ]]; then
+                backup_target="$HOME/.claude"
+            elif [[ "$package" = "opencode" ]]; then
+                backup_target="$HOME/.config/opencode"
+            elif [[ "$package" = "codex" ]]; then
+                backup_target="$HOME/.codex"
+            elif [[ "$package" = "gemini" ]]; then
+                backup_target="$HOME/.gemini"
+            elif [[ "$package" = "pi" ]]; then
+                backup_target="$HOME/.pi"
             fi
+
+            if [[ -n "$backup_target" && -e "$backup_target" ]]; then
+                mv "$backup_target" "$backup_target.backup.$timestamp"
+                echo "  Backed up $backup_target to $backup_target.backup.$timestamp"
+            fi
+
             stow -v -d "$DOTFILES_DIR" -t "$HOME" "$package"
             echo -e "${GREEN}  ✓ Installed (after backup)${NC}"
         else
             echo -e "${YELLOW}  ⊘ Skipped${NC}"
             return 1
         fi
-    else
-        stow -d "$DOTFILES_DIR" -t "$HOME" "$package"
-        echo -e "${GREEN}  ✓ Installed${NC}"
     fi
     echo ""
 }
