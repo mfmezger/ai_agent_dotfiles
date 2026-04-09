@@ -139,9 +139,9 @@ Managed targets:
 stow -R claude codex gemini pi
 
 # 3) Verify links
-ls -la ~/.claude/skills/github/SKILL.md
-ls -la ~/.codex/skills/github/SKILL.md
-ls -la ~/.gemini/commands/github.md
+ls -la ~/.claude/skills/github-pr/SKILL.md
+ls -la ~/.codex/skills/github-pr/SKILL.md
+ls -la ~/.gemini/commands/github-pr.md
 
 # Optional: ensure no old misplaced path remains
 ls -la ~/skills
