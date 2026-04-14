@@ -29,6 +29,32 @@ DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 echo -e "${GREEN}Installing from:${NC} $DOTFILES_DIR"
 echo ""
 
+install_rtk() {
+    echo -e "${YELLOW}Checking RTK...${NC} CLI proxy for token-optimized shell commands"
+
+    if command -v rtk &> /dev/null; then
+        echo -e "${GREEN}  ✓ Already installed${NC}"
+        echo ""
+        return 0
+    fi
+
+    if [[ "$OSTYPE" == darwin* ]] && command -v brew &> /dev/null; then
+        echo "  Installing with Homebrew: brew install rtk"
+        brew install rtk
+    else
+        echo "  Installing with the official RTK install script"
+        curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh
+    fi
+
+    if command -v rtk &> /dev/null; then
+        echo -e "${GREEN}  ✓ Installed${NC}"
+    else
+        echo -e "${YELLOW}  ! Installed, but \`rtk\` is not on PATH in this shell${NC}"
+        echo '  Add `export PATH="$HOME/.local/bin:$PATH"` to your shell config if needed'
+    fi
+    echo ""
+}
+
 # Function to stow a package
 stow_package() {
     local package=$1
@@ -84,6 +110,7 @@ stow_package() {
 }
 
 # Install packages
+install_rtk
 stow_package "claude" "Claude Code configs → ~/.claude/"
 stow_package "opencode" "OpenCode configs → ~/.config/opencode/"
 stow_package "codex" "Codex CLI configs → ~/.codex/"
