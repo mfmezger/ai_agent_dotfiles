@@ -4,7 +4,7 @@
     "~/ai_agent_dotfiles/shared/skills"
   ],
   "enableSkillCommands": true,
-  "theme": "ekphos-ayu",
+  "theme": "mayu",
   "packages": [
     "npm:@tmustier/pi-ralph-wiggum",
     "git:github.com/earendil-works/pi-review",
