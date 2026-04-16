@@ -1,7 +1,14 @@
 {
-  "lastChangelogVersion": "0.64.0",
+  "lastChangelogVersion": "0.67.3",
   "skills": [
     "~/ai_agent_dotfiles/shared/skills"
   ],
-  "enableSkillCommands": true
+  "enableSkillCommands": true,
+  "theme": "ekphos-ayu",
+  "packages": [
+    "npm:@tmustier/pi-ralph-wiggum",
+    "git:github.com/earendil-works/pi-review",
+    "git:github.com/mfmezger/pi-skill-searcher"
+  ],
+  "quietStartup": true
 }
