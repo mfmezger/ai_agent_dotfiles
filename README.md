@@ -152,7 +152,7 @@ ls -la ~/skills
 
 ## 📝 Development Guidelines
 
-- **Shell Scripts**: Use `set -e`, 2-space indent, and meaningful names.
+- **Shell Scripts**: Use `set -e`, 4-space indent, and meaningful names.
 - **Markdown**: Use clear headings and code blocks.
 - **JSON**: 2-space indent, descriptive keys.
 - **Testing**: Verify syntax (`bash -n`) and test with `stow -n` (dry-run) before committing.
