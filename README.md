@@ -1,7 +1,7 @@
 # 🤖 AI Agent Dotfiles
 
 Personal configuration files for AI coding agents and tools (**Claude Code**,
-**OpenCode**, **Codex CLI**, **Gemini CLI**, and **pi coding agent**).
+**OpenCode**, **Codex CLI**, **Gemini CLI**, and the **pi coding agent**).
 
 > **Note**: This is a companion to my [main dotfiles repository](https://github.com/mfmezger/dotfiles), kept separate for personal use.
 
@@ -9,7 +9,7 @@ Personal configuration files for AI coding agents and tools (**Claude Code**,
 
 ```bash
 # 1. Clone
-git clone https://github.com/YOUR_USERNAME/ai_agent_dotfiles.git ~/ai_agent_dotfiles
+git clone https://github.com/mfmezger/ai_agent_dotfiles.git ~/ai_agent_dotfiles
 cd ~/ai_agent_dotfiles
 
 # 2. Install (via script)
@@ -70,7 +70,7 @@ The repository uses Stow to symlink configurations to their respective home dire
 ├── opencode/ (.config/)     # Configs, Agents, Skills, Rules for OpenCode
 ├── codex/ (.codex/)         # Skills and config for Codex CLI
 ├── gemini/ (.gemini/)       # Custom commands for Gemini CLI
-├── pi/ (.pi/)               # Settings for pi coding agent
+├── pi/ (.pi/)               # Settings and themes for pi coding agent
 └── install.sh               # Setup script
 ```
 
@@ -95,7 +95,9 @@ The repository uses Stow to symlink configurations to their respective home dire
   home-relative path so it is portable across your machines.
 - **pi config**: Track pi settings in `pi/.pi/agent/settings.json`, which stows
   to `~/.pi/agent/settings.json`.
-
+- **pi themes**: Custom pi themes live in `pi/.pi/agent/themes/` and stow to
+  `~/.pi/agent/themes/`. The current tracked custom theme is `mayu`, selected
+  via `pi/.pi/agent/settings.json`.
 
 - **Codex CLI skills**: Put skill folders in `~/.codex/skills/` globally, or in
   `./.codex/skills/` for a project-specific skill.
@@ -123,7 +125,7 @@ To keep the same skill behavior across Claude, Codex, and Gemini:
 Managed targets:
 
 - `pi/.pi/agent/settings.json` -> `~/.pi/agent/settings.json` (loads shared pi skills from `~/ai_agent_dotfiles/shared/skills`)
-
+- `pi/.pi/agent/themes/<theme>.json` -> `~/.pi/agent/themes/<theme>.json`
 - `claude/.claude/skills/<skill-name>` -> symlink to `shared/skills/<skill-name>`
 - `codex/.codex/skills/<skill-name>` -> symlink to `shared/skills/<skill-name>`
 - `gemini/.gemini/skills/<skill-name>` -> symlink to `shared/skills/<skill-name>`
@@ -142,6 +144,7 @@ stow -R claude codex gemini pi
 ls -la ~/.claude/skills/github-pr/SKILL.md
 ls -la ~/.codex/skills/github-pr/SKILL.md
 ls -la ~/.gemini/commands/github-pr.md
+ls -la ~/.pi/agent/themes/mayu.json
 
 # Optional: ensure no old misplaced path remains
 ls -la ~/skills
@@ -149,7 +152,7 @@ ls -la ~/skills
 
 ## 📝 Development Guidelines
 
-- **Shell Scripts**: Use `set -e`, 4-space indent, and meaningful names.
+- **Shell Scripts**: Use `set -e`, 2-space indent, and meaningful names.
 - **Markdown**: Use clear headings and code blocks.
 - **JSON**: 2-space indent, descriptive keys.
 - **Testing**: Verify syntax (`bash -n`) and test with `stow -n` (dry-run) before committing.
