@@ -20,7 +20,7 @@ if ! command -v stow &> /dev/null; then
     echo ""
     echo "Install it first:"
     echo "  macOS:  brew install stow"
-    echo "  Linux:  sudo apt install stow  (or pacman -S stow)"
+    echo "  Linux:  sudo apt install stow  (or paru -S stow)"
     exit 1
 fi
 
