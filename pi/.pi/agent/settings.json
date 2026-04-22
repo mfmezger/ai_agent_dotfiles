@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.67.3",
+  "lastChangelogVersion": "0.67.68",
   "skills": [
     "~/ai_agent_dotfiles/shared/skills"
   ],
@@ -8,7 +8,12 @@
   "packages": [
     "npm:@tmustier/pi-ralph-wiggum",
     "git:github.com/earendil-works/pi-review",
-    "git:github.com/mfmezger/pi-skill-searcher"
+    "git:github.com/mfmezger/pi-skill-searcher",
+    "npm:pi-web-access",
+    "npm:pi-rtk-optimizer"
   ],
-  "quietStartup": true
+  "quietStartup": true,
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.4",
+  "defaultThinkingLevel": "high"
 }
