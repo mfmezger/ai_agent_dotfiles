@@ -1,5 +1,5 @@
 ---
-description: Automates the end-to-end Git workflow: branch creation, staging, committing, pushing, and opening or updating a GitHub pull request. Use when a feature or fix is ready for review and requires a structured PR, or when branch changes may need to be pushed to an existing PR for follow-up review.
+description: Automates the end-to-end Git workflow: branch creation, staging, committing, pushing, opening or updating a GitHub pull request, triggering PR review, then waiting five minutes and checking the feedback. Use when a feature or fix is ready for review and requires a structured PR, or when branch changes may need to be pushed to an existing PR for follow-up review.
 ---
 
 
@@ -30,7 +30,7 @@ Rules:
 
 ## Workflow Steps
 
-Follow this order exactly: confirm branch state, stage, commit, push, then handle the PR.
+Follow this order exactly: confirm branch state, stage, commit, push, handle the PR, trigger review, wait five minutes, then check feedback.
 
 1.  **Branch Check / Creation**
     - Check the current branch before doing anything else.
@@ -69,12 +69,25 @@ Follow this order exactly: confirm branch state, stage, commit, push, then handl
       - Create the PR using `gh pr create`.
       - Provide a concise title (often the commit message) and a body summarizing the changes.
       - Execute: `gh pr create --title "<title>" --body "<body>"`
-      - Share the generated PR URL with the user.
+      - Immediately after PR creation, add a PR comment containing exactly `/gemini review` to trigger the code quality review.
+      - Execute: `gh pr comment <number-or-url> --body "/gemini review"`
+      - Share the generated PR URL with the user and mention that the review trigger comment was added.
     - If a PR already exists:
       - Do not open a duplicate PR.
       - After the push succeeds, add a PR comment containing exactly `/gemini review` to trigger the code quality review.
       - Execute: `gh pr comment <number-or-url> --body "/gemini review"`
       - Share the existing PR URL with the user and mention that the review trigger comment was added after pushing the new commit.
+
+6.  **Wait and Check Feedback**
+    - After posting `/gemini review`, wait five minutes before checking for feedback.
+    - Execute: `sleep 300`
+    - Then inspect the PR discussion and review state.
+    - Use `gh pr view <number-or-url> --comments` to read top-level PR discussion.
+    - Use `gh pr view <number-or-url> --json reviewDecision,latestReviews,reviews,statusCheckRollup,url,number` to inspect review outcomes and CI status.
+    - If inline review comments may exist, also fetch them with:
+      `gh api repos/$(gh repo view --json nameWithOwner -q .nameWithOwner)/pulls/<number>/comments`
+    - Summarize any actionable feedback, requested changes, approvals, and failing checks for the user.
+    - If no feedback has arrived yet, explicitly say so instead of implying the PR was reviewed.
 
 ## Common Failures
 
