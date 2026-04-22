@@ -45,3 +45,5 @@ I follow the [Karpathy Guidelines](skills/karpathy-guidelines/SKILL.md) for all 
 
 - Invoke `/karpathy-guidelines` skill to explicitly apply stricter coding discipline
 - Project-specific guidelines should be in each project's `.claude/CLAUDE.md`
+
+@RTK.md
