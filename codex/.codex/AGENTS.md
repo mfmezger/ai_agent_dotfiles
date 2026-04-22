@@ -1,6 +1,6 @@
-# Claude Code User-Level Guidelines
+# Codex CLI User-Level Guidelines
 
-This file provides global context and guidelines that apply across all projects.
+This file provides global instructions and preferences that apply across all projects.
 
 <!-- Generated from `shared/context/default-coding-guidelines.md` via `./scripts/sync-contexts.sh`. -->
 
@@ -50,7 +50,5 @@ For complex or ambiguous tasks, they help ensure quality and clarity.
 
 ## Tool Notes
 
-- Project-specific guidance should live in each project's `.claude/CLAUDE.md`.
-
-@RTK.md
+- Project-specific guidance should live in repository `AGENTS.md` files.
 

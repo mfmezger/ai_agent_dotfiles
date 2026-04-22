@@ -1,9 +1,3 @@
-# Claude Code User-Level Guidelines
-
-This file provides global context and guidelines that apply across all projects.
-
-<!-- Generated from `shared/context/default-coding-guidelines.md` via `./scripts/sync-contexts.sh`. -->
-
 ## Coding Guidelines
 
 I follow the Karpathy Guidelines for all coding tasks, which help reduce
@@ -46,11 +40,3 @@ For complex or ambiguous tasks, they help ensure quality and clarity.
 - Test-driven when fixing bugs
 - Incremental commits for multi-step changes
 - Ask before major architectural changes
-
-
-## Tool Notes
-
-- Project-specific guidance should live in each project's `.claude/CLAUDE.md`.
-
-@RTK.md
-
