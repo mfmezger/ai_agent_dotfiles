@@ -45,8 +45,9 @@ cd ~/ai_agent_dotfiles
 # If pi already has local state/config, the installer may prompt to back up
 # ~/.pi before stowing the repo-managed settings.json symlink.
 
-# 3) Sync shared skills (recommended)
+# 3) Sync shared skills and default context files (recommended)
 ./scripts/sync-skills.sh
+./scripts/sync-contexts.sh
 stow -R claude codex gemini pi
 
 # 4) Verify configs are linked
@@ -66,16 +67,18 @@ The repository uses Stow to symlink configurations to their respective home dire
 
 ```text
 ~/ai_agent_dotfiles/
-├── claude/ (.claude/)       # Settings, Agents, Skills, Rules for Claude Code
-├── opencode/ (.config/)     # Configs, Agents, Skills, Rules for OpenCode
-├── codex/ (.codex/)         # Skills and config for Codex CLI
-├── gemini/ (.gemini/)       # Custom commands for Gemini CLI
-├── pi/ (.pi/)               # Settings and themes for pi coding agent
+├── claude/ (.claude/)       # Settings, context, agents, skills, rules for Claude Code
+├── opencode/ (.config/)     # Configs, agents, skills, rules for OpenCode
+├── codex/ (.codex/)         # Global context, skills, and rules for Codex CLI
+├── gemini/ (.gemini/)       # Global context, skills, and custom commands for Gemini CLI
+├── pi/ (.pi/)               # Global context, settings, themes, and skills for pi
+├── shared/                  # Canonical shared skills and context sources
 └── install.sh               # Setup script
 ```
 
 ### Key Components
 
+- **Context files**: Always-loaded global instructions such as `CLAUDE.md`, `AGENTS.md`, and `GEMINI.md`.
 - **Agents**: Specialized sub-agents (e.g., `code-roaster`, `refactorer`, `detective`) for specific coding tasks.
 - **Skills**: Reusable capabilities like `karpathy-guidelines`, `generate-image`, and Jira/Confluence integration.
 - **Rules**: Always-active instructions and permissions.
@@ -88,8 +91,18 @@ The repository uses Stow to symlink configurations to their respective home dire
 - **Remove**: Run `stow -D claude opencode codex gemini pi` to unlink.
 - **Secrets**: Create `~/.claude.json` manually for API keys and sensitive tokens (never commit them).
 
-## 📍 Skill/Command Locations
+## 📍 Skill, Command, and Context Locations
 
+- **Shared context source**: Edit the canonical always-on guidance in
+  `shared/context/default-coding-guidelines.md`.
+- **Claude global context**: `claude/.claude/CLAUDE.md` stows to
+  `~/.claude/CLAUDE.md`.
+- **Codex global context**: `codex/.codex/AGENTS.md` stows to
+  `~/.codex/AGENTS.md`.
+- **Gemini global context**: `gemini/.gemini/GEMINI.md` stows to
+  `~/.gemini/GEMINI.md`.
+- **pi global context**: `pi/.pi/agent/AGENTS.md` stows to
+  `~/.pi/agent/AGENTS.md`.
 - **pi skills**: This repo configures pi via `~/.pi/agent/settings.json` to load
   canonical shared skills from `~/ai_agent_dotfiles/shared/skills/` using a
   home-relative path so it is portable across your machines.
@@ -98,32 +111,39 @@ The repository uses Stow to symlink configurations to their respective home dire
 - **pi themes**: Custom pi themes live in `pi/.pi/agent/themes/` and stow to
   `~/.pi/agent/themes/`. The current tracked custom theme is `mayu`, selected
   via `pi/.pi/agent/settings.json`.
-
 - **Codex CLI skills**: Put skill folders in `~/.codex/skills/` globally, or in
   `./.codex/skills/` for a project-specific skill.
 - **Gemini CLI custom commands**: Put markdown command files in
   `~/.gemini/commands/` globally, or in `./.gemini/commands/` for project-only
   commands.
 
-## 🔄 Cross-Agent Skill Sync
+## 🔄 Cross-Agent Skill and Context Sync
 
-To keep the same skill behavior across Claude, Codex, and Gemini:
+To keep shared skills and default coding guidance aligned across agents:
 
 - Edit canonical skills in `shared/skills/<skill-name>/SKILL.md`
-- Sync links and generated commands with:
+- Edit canonical always-on context in `shared/context/default-coding-guidelines.md`
+- Sync generated files with:
 
 ```bash
 ./scripts/sync-skills.sh
+./scripts/sync-contexts.sh
 ```
 
 - Validate everything is in sync:
 
 ```bash
 ./scripts/sync-skills.sh --check
+./scripts/sync-contexts.sh --check
 ```
 
 Managed targets:
 
+- `shared/context/default-coding-guidelines.md` -> source for generated global context files
+- `claude/.claude/CLAUDE.md` -> generated global Claude context
+- `codex/.codex/AGENTS.md` -> generated global Codex context
+- `gemini/.gemini/GEMINI.md` -> generated global Gemini context
+- `pi/.pi/agent/AGENTS.md` -> generated global pi context
 - `pi/.pi/agent/settings.json` -> `~/.pi/agent/settings.json` (loads shared pi skills from `~/ai_agent_dotfiles/shared/skills`)
 - `pi/.pi/agent/themes/<theme>.json` -> `~/.pi/agent/themes/<theme>.json`
 - `claude/.claude/skills/<skill-name>` -> symlink to `shared/skills/<skill-name>`
@@ -131,16 +151,21 @@ Managed targets:
 - `gemini/.gemini/skills/<skill-name>` -> symlink to `shared/skills/<skill-name>`
 - `gemini/.gemini/commands/<skill-name>.md` -> generated command file
 
-### Apply Synced Skills Locally
+### Apply Synced Resources Locally
 
 ```bash
-# 1) Update per-tool links and generated command files
+# 1) Update per-tool links and generated files
 ./scripts/sync-skills.sh
+./scripts/sync-contexts.sh
 
 # 2) Restow into your home directory
 stow -R claude codex gemini pi
 
 # 3) Verify links
+ls -la ~/.claude/CLAUDE.md
+ls -la ~/.codex/AGENTS.md
+ls -la ~/.gemini/GEMINI.md
+ls -la ~/.pi/agent/AGENTS.md
 ls -la ~/.claude/skills/github-pr/SKILL.md
 ls -la ~/.codex/skills/github-pr/SKILL.md
 ls -la ~/.gemini/commands/github-pr.md

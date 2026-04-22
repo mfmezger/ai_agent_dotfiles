@@ -69,17 +69,29 @@ opencode/.config/opencode/
 └── README.md          # Config documentation
 
 codex/.codex/
-└── skills/            # Skills (directories with SKILL.md)
+├── AGENTS.md         # User-level context
+├── rules/            # Codex rules / permissions
+└── skills/           # Skills (directories with SKILL.md)
 
 gemini/.gemini/
-├── skills/            # Symlinks to shared skills
-└── commands/          # Custom command files (.md)
+├── GEMINI.md         # User-level context
+├── skills/           # Symlinks to shared skills
+└── commands/         # Custom command files (.md)
 
-shared/skills/
-└── <skill>/...        # Canonical skill source for all tools
+pi/.pi/agent/
+├── AGENTS.md         # User-level context
+├── settings.json     # pi settings
+└── themes/           # Custom pi themes
+
+shared/
+├── context/
+│   └── default-coding-guidelines.md  # Canonical shared context source
+└── skills/
+    └── <skill>/...   # Canonical skill source for all tools
 
 scripts/
-└── sync-skills.sh     # Syncs per-tool skill symlinks and Gemini commands
+├── sync-contexts.sh  # Syncs generated global context files across tools
+└── sync-skills.sh    # Syncs per-tool skill symlinks and Gemini commands
 ```
 
 #### File Naming
@@ -124,22 +136,25 @@ gemini --help       # If Gemini CLI available
 ```bash
 # Regenerate files from shared source
 ./scripts/sync-skills.sh
+./scripts/sync-contexts.sh
 
 # Validate symlinks and generated files are in sync
 ./scripts/sync-skills.sh --check
+./scripts/sync-contexts.sh --check
 
 # Apply to home directory
-stow -R claude codex gemini
+stow -R claude codex gemini pi
 ```
 
 ### Adding New Configs
 
 1. For shared skills, edit `shared/skills/<name>/SKILL.md` first.
-2. Run `./scripts/sync-skills.sh` to update tool-specific symlinks/files.
-3. For non-shared config, create file in the appropriate package subdirectory.
-4. Restow: `stow -R <package>`
-5. Verify symlink: `ls -la ~/.<target>/new-file`
-6. Test if applicable (launch Claude/OpenCode and verify config loaded)
+2. For shared always-on guidance, edit `shared/context/default-coding-guidelines.md`.
+3. Run `./scripts/sync-skills.sh` and/or `./scripts/sync-contexts.sh` to update generated files.
+4. For non-shared config, create file in the appropriate package subdirectory.
+5. Restow: `stow -R <package>`
+6. Verify symlink: `ls -la ~/.<target>/new-file`
+7. Test if applicable (launch Claude/OpenCode and verify config loaded)
 
 ## Important Constraints
 
