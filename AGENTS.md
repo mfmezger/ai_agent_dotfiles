@@ -143,7 +143,7 @@ gemini --help       # If Gemini CLI available
 ./scripts/sync-contexts.sh --check
 
 # Apply to home directory
-stow -R claude codex gemini pi
+stow -R claude opencode codex gemini pi
 ```
 
 ### Adding New Configs

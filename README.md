@@ -48,7 +48,7 @@ cd ~/ai_agent_dotfiles
 # 3) Sync shared skills and default context files (recommended)
 ./scripts/sync-skills.sh
 ./scripts/sync-contexts.sh
-stow -R claude codex gemini pi
+stow -R claude opencode codex gemini pi
 
 # 4) Verify configs are linked
 ls -la ~/.claude/
@@ -159,7 +159,7 @@ Managed targets:
 ./scripts/sync-contexts.sh
 
 # 2) Restow into your home directory
-stow -R claude codex gemini pi
+stow -R claude opencode codex gemini pi
 
 # 3) Verify links
 ls -la ~/.claude/CLAUDE.md

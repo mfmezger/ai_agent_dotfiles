@@ -15,8 +15,6 @@ write_or_check_file() {
   local generated_file="$1"
   local target_file="$2"
 
-  mkdir -p "$(dirname "$target_file")"
-
   if [[ "$MODE" == "--check" ]]; then
     if [[ ! -f "$target_file" ]]; then
       echo "Missing target: $target_file"
@@ -27,6 +25,7 @@ write_or_check_file() {
       return 1
     fi
   else
+    mkdir -p "$(dirname "$target_file")"
     cp "$generated_file" "$target_file"
     echo "Updated: $target_file"
   fi
