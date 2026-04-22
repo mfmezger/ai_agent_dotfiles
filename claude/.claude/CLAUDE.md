@@ -47,7 +47,6 @@ For complex or ambiguous tasks, they help ensure quality and clarity.
 - Incremental commits for multi-step changes
 - Ask before major architectural changes
 
-
 ## Tool Notes
 
 - Project-specific guidance should live in each project's `.claude/CLAUDE.md`.
