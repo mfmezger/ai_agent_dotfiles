@@ -30,7 +30,9 @@ Rules:
 
 ## Workflow Steps
 
-Follow this order exactly: confirm branch state, stage, commit, push, handle the PR, trigger review, wait five minutes, check feedback, then resolve any review threads that are already addressed.
+Follow this order exactly: confirm branch state, stage, commit, push, handle
+the PR, trigger review, wait five minutes, check feedback, then resolve any
+review threads that are already addressed.
 
 1.  **Branch Check / Creation**
     - Check the current branch before doing anything else.
@@ -79,8 +81,12 @@ Follow this order exactly: confirm branch state, stage, commit, push, handle the
       - Share the existing PR URL with the user and mention that the review trigger comment was added after pushing the new commit.
 
 6.  **Wait and Check Feedback**
-    - After posting `/gemini review`, wait five minutes before checking for feedback.
-    - Wait five minutes. Use `sleep 300` if the tool timeout allows it. If you cannot wait internally (for example due to tool timeouts or a stateless agent workflow), inform the user that you will check for feedback in five minutes and ask them to prompt you then.
+    - After posting `/gemini review`, wait five minutes before checking for
+      feedback.
+    - Use `sleep 300` if the tool timeout allows it. If you cannot wait
+      internally, for example due to tool timeouts or a stateless agent
+      workflow, inform the user that you will check for feedback in five
+      minutes and ask them to prompt you then.
     - Then inspect the PR discussion and review state.
     - Use `gh pr view <number-or-url> --comments` to read top-level PR discussion.
     - Use `gh pr view <number-or-url> --json reviewDecision,reviews,statusCheckRollup,url,number` to inspect review outcomes and CI status.
