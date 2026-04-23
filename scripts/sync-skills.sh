@@ -73,10 +73,8 @@ render_gemini_command() {
     }
 
     capture_block == 1 {
-      if ($0 ~ /^[[:space:]]+/) {
-        line = $0
-        sub(/^[[:space:]]+/, "", line)
-        line = trim(line)
+      if ($0 ~ /^[[:space:]]+/ || $0 ~ /^$/) {
+        line = trim($0)
         if (line != "") {
           if (description != "") {
             description = description " "
@@ -90,9 +88,9 @@ render_gemini_command() {
       exit
     }
 
-    $1 == "description:" {
+    $0 ~ /^[[:space:]]*description:/ {
       rest = $0
-      sub(/^description:[[:space:]]*/, "", rest)
+      sub(/^[[:space:]]*description:[[:space:]]*/, "", rest)
       rest = trim(rest)
 
       if (rest == ">" || rest == "|") {

@@ -81,12 +81,15 @@ review threads that are already addressed.
       - Share the existing PR URL with the user and mention that the review trigger comment was added after pushing the new commit.
 
 6.  **Wait and Check Feedback**
-    - After posting `/gemini review`, wait five minutes before checking for
-      feedback.
-    - Use `sleep 300` if the tool timeout allows it. If you cannot wait
-      internally, for example due to tool timeouts or a stateless agent
-      workflow, inform the user that you will check for feedback in five
-      minutes and ask them to prompt you then.
+    - After posting `/gemini review`, wait up to five minutes before deciding
+      that no feedback has arrived.
+    - If the tool timeout allows it, prefer polling for feedback every 60
+      seconds for up to five minutes so you can stop early when feedback
+      arrives.
+    - If polling is not practical but the timeout allows it, use `sleep 300`.
+    - If you cannot wait internally, for example due to tool timeouts or a
+      stateless agent workflow, inform the user that you will check for
+      feedback in five minutes and ask them to prompt you then.
     - Then inspect the PR discussion and review state.
     - Use `gh pr view <number-or-url> --comments` to read top-level PR discussion.
     - Use `gh pr view <number-or-url> --json reviewDecision,reviews,statusCheckRollup,url,number` to inspect review outcomes and CI status.
