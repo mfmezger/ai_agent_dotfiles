@@ -80,7 +80,7 @@ Follow this order exactly: confirm branch state, stage, commit, push, handle the
 
 6.  **Wait and Check Feedback**
     - After posting `/gemini review`, wait five minutes before checking for feedback.
-    - Wait five minutes. Use `sleep 300` only if the current tool timeout allows it; otherwise tell the user you are waiting five minutes and continue with the follow-up check after the delay instead of forcing a single command past its timeout.
+    - Wait five minutes. Use `sleep 300` if the tool timeout allows it. If you cannot wait internally (for example due to tool timeouts or a stateless agent workflow), inform the user that you will check for feedback in five minutes and ask them to prompt you then.
     - Then inspect the PR discussion and review state.
     - Use `gh pr view <number-or-url> --comments` to read top-level PR discussion.
     - Use `gh pr view <number-or-url> --json reviewDecision,reviews,statusCheckRollup,url,number` to inspect review outcomes and CI status.
