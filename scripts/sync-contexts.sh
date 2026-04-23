@@ -52,14 +52,7 @@ render_notes() {
 @RTK.md
 EOF
       ;;
-    codex)
-      cat <<'EOF'
-## Tool Notes
-
-- Project-specific guidance should live in repository `AGENTS.md` files.
-EOF
-      ;;
-    pi)
+    codex|pi)
       cat <<'EOF'
 ## Tool Notes
 
@@ -74,7 +67,7 @@ EOF
 EOF
       ;;
     *)
-      echo "Unknown tool: $tool"
+      echo "Unknown tool: $tool" >&2
       return 1
       ;;
   esac
@@ -104,7 +97,7 @@ render_context() {
       intro="This file provides global context and guidelines that apply across all projects."
       ;;
     *)
-      echo "Unknown tool: $tool"
+      echo "Unknown tool: $tool" >&2
       return 1
       ;;
   esac
