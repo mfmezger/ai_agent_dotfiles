@@ -185,6 +185,9 @@ Before finalizing the report:
 
 ## Example Output
 
+Link to the PR: https://github.com/...
+
+
 ```markdown
 ## Does Not Need To Be Fixed
 
@@ -203,4 +206,6 @@ Before finalizing the report:
 - `✅ Yes`: 1 item.
 - `❌ No`: 1 item.
 - Highest priority: add the webhook null guard because it prevents a runtime failure.
+
+Should i fix the should be fixed issues?
 ```
