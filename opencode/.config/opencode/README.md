@@ -4,12 +4,13 @@ This directory contains OpenCode AI coding agent configuration for this dotfiles
 
 ## Structure
 
+- `AGENTS.md` - Global OpenCode instructions synced from shared context
 - `opencode.json` - Main OpenCode configuration file
 - `rules/` - Additional rule files (optional)
 
 ## Usage
 
-OpenCode automatically reads the `AGENTS.md` file in the project root. This `.opencode` directory allows for additional configuration:
+OpenCode automatically reads the `AGENTS.md` file in the project root, and it also supports a global `~/.config/opencode/AGENTS.md` file. This `.opencode` directory allows for additional configuration:
 
 1. Reference external instruction files in `opencode.json`
 2. Store modular rule files in `rules/` subdirectory
