@@ -47,6 +47,7 @@ render_notes() {
 ## Tool Notes
 
 - Project-specific guidance should live in each project's `.claude/CLAUDE.md`.
+- Invoke `/karpathy-guidelines` skill to explicitly apply stricter coding discipline.
 
 @RTK.md
 EOF

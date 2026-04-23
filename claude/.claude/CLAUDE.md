@@ -50,6 +50,7 @@ For complex or ambiguous tasks, they help ensure quality and clarity.
 ## Tool Notes
 
 - Project-specific guidance should live in each project's `.claude/CLAUDE.md`.
+- Invoke `/karpathy-guidelines` skill to explicitly apply stricter coding discipline.
 
 @RTK.md
 
