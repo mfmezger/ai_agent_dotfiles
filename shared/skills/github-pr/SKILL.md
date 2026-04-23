@@ -80,7 +80,7 @@ Follow this order exactly: confirm branch state, stage, commit, push, handle the
 
 6.  **Wait and Check Feedback**
     - After posting `/gemini review`, wait five minutes before checking for feedback.
-    - Execute: `sleep 300`
+    - Wait five minutes. Use `sleep 300` only if the current tool timeout allows it; otherwise tell the user you are waiting five minutes and continue with the follow-up check after the delay instead of forcing a single command past its timeout.
     - Then inspect the PR discussion and review state.
     - Use `gh pr view <number-or-url> --comments` to read top-level PR discussion.
     - Use `gh pr view <number-or-url> --json reviewDecision,reviews,statusCheckRollup,url,number` to inspect review outcomes and CI status.
@@ -96,9 +96,9 @@ Follow this order exactly: confirm branch state, stage, commit, push, handle the
     - Never resolve a thread unless the underlying issue is actually fixed or the user explicitly wants it deferred.
     - When checking feedback, identify unresolved review threads and match them to the code changes you made.
     - List review threads with GraphQL so you can get resolvable thread IDs:
-      `gh api graphql -f query='query($owner:String!,$repo:String!,$number:Int!){repository(owner:$owner,name:$repo){pullRequest(number:$number){reviewThreads(first:100){nodes{id,isResolved,isOutdated,comments(first:20){nodes{databaseId,body,path,line,url}}}}}}}' -F owner=<owner> -F repo=<repo> -F number=<number>`
+      `gh api graphql -f query='query($owner:String!,$repo:String!,$number:Int!){repository(owner:$owner,name:$repo){pullRequest(number:$number){reviewThreads(first:100){nodes{id,isResolved,isOutdated,comments(first:20){nodes{databaseId,body,path,line,url}}}}}}}' -f owner=<owner> -f repo=<repo> -F number=<number>`
     - Resolve an addressed thread with:
-      `gh api graphql -f query='mutation($threadId:ID!){resolveReviewThread(input:{threadId:$threadId}){thread{isResolved}}}' -F threadId=<thread-id>`
+      `gh api graphql -f query='mutation($threadId:ID!){resolveReviewThread(input:{threadId:$threadId}){thread{isResolved}}}' -f threadId=<thread-id>`
     - If you push a follow-up fix for PR feedback, re-check the discussion afterward and resolve any threads that are now addressed.
     - In your summary to the user, call out which review threads were resolved and which still need action.
 
