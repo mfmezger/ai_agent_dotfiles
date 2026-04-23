@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.67.68",
+  "lastChangelogVersion": "0.69.0",
   "skills": [
     "~/ai_agent_dotfiles/shared/skills"
   ],
@@ -10,7 +10,8 @@
     "git:github.com/earendil-works/pi-review",
     "git:github.com/mfmezger/pi-skill-searcher",
     "npm:pi-web-access",
-    "npm:pi-rtk-optimizer"
+    "npm:pi-rtk-optimizer",
+    "npm:@juicesharp/rpiv-advisor"
   ],
   "quietStartup": true,
   "defaultProvider": "openai-codex",
