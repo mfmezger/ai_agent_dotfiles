@@ -44,13 +44,63 @@ render_gemini_command() {
 
   local description
   description="$(awk '
-    BEGIN { in_frontmatter = 0 }
-    /^---$/ && in_frontmatter == 0 { in_frontmatter = 1; next }
-    /^---$/ && in_frontmatter == 1 { exit }
-    in_frontmatter == 1 && $1 == "description:" {
-      sub(/^description:[[:space:]]*/, "", $0)
-      gsub(/^"|"$/, "", $0)
-      print
+    function trim(value) {
+      sub(/^[[:space:]]+/, "", value)
+      sub(/[[:space:]]+$/, "", value)
+      return value
+    }
+
+    BEGIN {
+      in_frontmatter = 0
+      capture_block = 0
+      description = ""
+    }
+
+    /^---$/ && in_frontmatter == 0 {
+      in_frontmatter = 1
+      next
+    }
+
+    /^---$/ && in_frontmatter == 1 {
+      if (capture_block == 1) {
+        print description
+      }
+      exit
+    }
+
+    in_frontmatter != 1 {
+      next
+    }
+
+    capture_block == 1 {
+      if ($0 ~ /^[[:space:]]+/ || $0 ~ /^$/) {
+        line = trim($0)
+        if (line != "") {
+          if (description != "") {
+            description = description " "
+          }
+          description = description line
+        }
+        next
+      }
+
+      print description
+      exit
+    }
+
+    $0 ~ /^[[:space:]]*description:/ {
+      rest = $0
+      sub(/^[[:space:]]*description:[[:space:]]*/, "", rest)
+      rest = trim(rest)
+
+      if (rest == ">" || rest == "|") {
+        capture_block = 1
+        next
+      }
+
+      gsub(/^"|"$/, "", rest)
+      print rest
+      exit
     }
   ' "$source_file")"
 

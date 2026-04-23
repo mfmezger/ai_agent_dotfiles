@@ -1,6 +1,12 @@
 ---
 name: github-pr
-description: "Automates the end-to-end Git workflow: branch creation, staging, committing, pushing, and opening or updating a GitHub pull request. Use when a feature or fix is ready for review and requires a structured PR, or when branch changes may need to be pushed to an existing PR for follow-up review."
+description: >
+  Automates the end-to-end Git workflow: branch creation, staging, committing,
+  pushing, opening or updating a GitHub pull request, triggering PR review,
+  waiting five minutes, checking the feedback, and resolving addressed PR review
+  threads. Use when a feature or fix is ready for review and requires a
+  structured PR, or when branch changes may need to be pushed to an existing PR
+  for follow-up review.
 ---
 
 # GitHub Workflow
@@ -30,7 +36,9 @@ Rules:
 
 ## Workflow Steps
 
-Follow this order exactly: confirm branch state, stage, commit, push, then handle the PR.
+Follow this order exactly: confirm branch state, stage, commit, push, handle
+the PR, trigger review, wait five minutes, check feedback, then resolve any
+review threads that are already addressed.
 
 1.  **Branch Check / Creation**
     - Check the current branch before doing anything else.
@@ -69,12 +77,45 @@ Follow this order exactly: confirm branch state, stage, commit, push, then handl
       - Create the PR using `gh pr create`.
       - Provide a concise title (often the commit message) and a body summarizing the changes.
       - Execute: `gh pr create --title "<title>" --body "<body>"`
-      - Share the generated PR URL with the user.
+      - Immediately after PR creation, add a PR comment containing exactly `/gemini review` to trigger the code quality review.
+      - Execute: `gh pr comment <number-or-url> --body "/gemini review"`
+      - Share the generated PR URL with the user and mention that the review trigger comment was added.
     - If a PR already exists:
       - Do not open a duplicate PR.
       - After the push succeeds, add a PR comment containing exactly `/gemini review` to trigger the code quality review.
       - Execute: `gh pr comment <number-or-url> --body "/gemini review"`
       - Share the existing PR URL with the user and mention that the review trigger comment was added after pushing the new commit.
+
+6.  **Wait and Check Feedback**
+    - After posting `/gemini review`, wait up to five minutes before deciding
+      that no feedback has arrived.
+    - If the tool timeout allows it, prefer polling for feedback every 60
+      seconds for up to five minutes so you can stop early when feedback
+      arrives.
+    - If polling is not practical but the timeout allows it, use `sleep 300`.
+    - If you cannot wait internally, for example due to tool timeouts or a
+      stateless agent workflow, inform the user that you will check for
+      feedback in five minutes and ask them to prompt you then.
+    - Then inspect the PR discussion and review state.
+    - Use `gh pr view <number-or-url> --comments` to read top-level PR discussion.
+    - Use `gh pr view <number-or-url> --json reviewDecision,reviews,statusCheckRollup,url,number` to inspect review outcomes and CI status.
+    - Extract the numeric PR number when needed:
+      `gh pr view <number-or-url> --json number --jq .number`
+    - When investigating inline review feedback, fetch trimmed inline comments with:
+      `gh api repos/<owner>/<repo>/pulls/<number>/comments --jq 'map({id,body,path,line,user: .user.login,html_url})'`
+    - Summarize any actionable feedback, requested changes, approvals, unresolved threads, and failing checks for the user.
+    - If no feedback has arrived yet, explicitly say so instead of implying the PR was reviewed.
+
+7.  **Resolve Addressed Review Threads**
+    - If a review comment or thread has already been fully addressed by your latest changes, resolve that thread before reporting back.
+    - Never resolve a thread unless the underlying issue is actually fixed or the user explicitly wants it deferred.
+    - When checking feedback, identify unresolved review threads and match them to the code changes you made.
+    - List review threads with GraphQL so you can get resolvable thread IDs:
+      `gh api graphql -f query='query($owner:String!,$repo:String!,$number:Int!){repository(owner:$owner,name:$repo){pullRequest(number:$number){reviewThreads(first:100){nodes{id,isResolved,isOutdated,comments(first:20){nodes{databaseId,body,path,line,url}}}}}}}' -f owner=<owner> -f repo=<repo> -F number=<number>`
+    - Resolve an addressed thread with:
+      `gh api graphql -f query='mutation($threadId:ID!){resolveReviewThread(input:{threadId:$threadId}){thread{isResolved}}}' -f threadId=<thread-id>`
+    - If you push a follow-up fix for PR feedback, re-check the discussion afterward and resolve any threads that are now addressed.
+    - In your summary to the user, call out which review threads were resolved and which still need action.
 
 ## Common Failures
 
