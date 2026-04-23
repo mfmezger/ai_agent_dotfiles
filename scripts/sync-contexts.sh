@@ -11,6 +11,11 @@ if [[ "$MODE" != "write" && "$MODE" != "--check" ]]; then
   exit 1
 fi
 
+if [[ ! -f "$SHARED_CONTEXT" ]]; then
+  echo "Error: Shared context source not found at $SHARED_CONTEXT"
+  exit 1
+fi
+
 write_or_check_file() {
   local generated_file="$1"
   local target_file="$2"
@@ -119,25 +124,23 @@ sync_failed=0
 tmp_dir="$(mktemp -d)"
 trap 'rm -rf "$tmp_dir"' EXIT
 
-render_context claude "$tmp_dir/CLAUDE.md"
-if ! write_or_check_file "$tmp_dir/CLAUDE.md" "$ROOT_DIR/claude/.claude/CLAUDE.md"; then
-  sync_failed=1
-fi
+tool_targets=(
+  "claude:claude/.claude/CLAUDE.md"
+  "codex:codex/.codex/AGENTS.md"
+  "pi:pi/.pi/agent/AGENTS.md"
+  "gemini:gemini/.gemini/GEMINI.md"
+)
 
-render_context codex "$tmp_dir/AGENTS.codex.md"
-if ! write_or_check_file "$tmp_dir/AGENTS.codex.md" "$ROOT_DIR/codex/.codex/AGENTS.md"; then
-  sync_failed=1
-fi
+for entry in "${tool_targets[@]}"; do
+  tool="${entry%%:*}"
+  target="${entry#*:}"
+  temp_file="$tmp_dir/${tool}-$(basename "$target")"
 
-render_context pi "$tmp_dir/AGENTS.pi.md"
-if ! write_or_check_file "$tmp_dir/AGENTS.pi.md" "$ROOT_DIR/pi/.pi/agent/AGENTS.md"; then
-  sync_failed=1
-fi
-
-render_context gemini "$tmp_dir/GEMINI.md"
-if ! write_or_check_file "$tmp_dir/GEMINI.md" "$ROOT_DIR/gemini/.gemini/GEMINI.md"; then
-  sync_failed=1
-fi
+  render_context "$tool" "$temp_file"
+  if ! write_or_check_file "$temp_file" "$ROOT_DIR/$target"; then
+    sync_failed=1
+  fi
+done
 
 if [[ "$MODE" == "--check" ]]; then
   if [[ "$sync_failed" -ne 0 ]]; then
