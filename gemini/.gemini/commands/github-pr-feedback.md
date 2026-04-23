@@ -49,10 +49,11 @@ Start with the high-level PR data:
 gh pr view <pr> --json number,title,url,author,reviewDecision,comments,reviews,latestReviews,files
 ```
 
-If the user did not provide `<pr>`, infer it from the current branch:
+If the user did not provide `<pr>`, infer it from the current branch and fetch
+the same triage fields:
 
 ```bash
-gh pr view --json number,title,url,headRefName,baseRefName
+gh pr view --json number,title,url,author,reviewDecision,comments,reviews,latestReviews,files
 ```
 
 Fetch inline review threads when line-level comments matter. Replace
@@ -79,6 +80,7 @@ query($owner: String!, $name: String!, $number: Int!) {
               body
               createdAt
               url
+              diffHunk
             }
           }
         }
@@ -102,7 +104,7 @@ the PR feedback. Do not fabricate comments.
 Classify each distinct problem, not each individual comment. Merge duplicate
 comments that point at the same underlying issue.
 
-Use `✅ Yes` in `Should Be Fixed` when the feedback identifies:
+Use `✅ Yes` (Should Be Fixed) when the feedback identifies:
 
 - A correctness bug, regression, broken build, failing test, or runtime error.
 - A security, privacy, data-loss, race-condition, or reliability risk.
@@ -110,7 +112,7 @@ Use `✅ Yes` in `Should Be Fixed` when the feedback identifies:
 - A maintainability issue likely to confuse future changes or hide defects.
 - A small requested cleanup that is clearly valid and low-risk to apply.
 
-Use `❌ No` in `Should Be Fixed` when the feedback is:
+Use `❌ No` (Does Not Need To Be Fixed) when the feedback is:
 
 - Incorrect because it misreads the code or ignores existing behavior.
 - Already handled elsewhere in the PR.
