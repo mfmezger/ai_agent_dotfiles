@@ -1,6 +1,6 @@
 ---
 name: github-pr
-description: "Automates the end-to-end Git workflow: branch creation, staging, committing, pushing, opening or updating a GitHub pull request, triggering PR review, then waiting five minutes and checking the feedback. Use when a feature or fix is ready for review and requires a structured PR, or when branch changes may need to be pushed to an existing PR for follow-up review."
+description: "Automates the end-to-end Git workflow: branch creation, staging, committing, pushing, opening or updating a GitHub pull request, triggering PR review, waiting five minutes, checking the feedback, and resolving addressed PR review threads. Use when a feature or fix is ready for review and requires a structured PR, or when branch changes may need to be pushed to an existing PR for follow-up review."
 ---
 
 # GitHub Workflow
@@ -30,7 +30,7 @@ Rules:
 
 ## Workflow Steps
 
-Follow this order exactly: confirm branch state, stage, commit, push, handle the PR, trigger review, wait five minutes, then check feedback.
+Follow this order exactly: confirm branch state, stage, commit, push, handle the PR, trigger review, wait five minutes, check feedback, then resolve any review threads that are already addressed.
 
 1.  **Branch Check / Creation**
     - Check the current branch before doing anything else.
@@ -83,11 +83,24 @@ Follow this order exactly: confirm branch state, stage, commit, push, handle the
     - Execute: `sleep 300`
     - Then inspect the PR discussion and review state.
     - Use `gh pr view <number-or-url> --comments` to read top-level PR discussion.
-    - Use `gh pr view <number-or-url> --json reviewDecision,latestReviews,reviews,statusCheckRollup,url,number` to inspect review outcomes and CI status.
-    - If inline review comments may exist, also fetch them with:
-      `gh api repos/$(gh repo view --json nameWithOwner -q .nameWithOwner)/pulls/<number>/comments`
-    - Summarize any actionable feedback, requested changes, approvals, and failing checks for the user.
+    - Use `gh pr view <number-or-url> --json reviewDecision,reviews,statusCheckRollup,url,number` to inspect review outcomes and CI status.
+    - Extract the numeric PR number when needed:
+      `gh pr view <number-or-url> --json number --jq .number`
+    - When investigating inline review feedback, fetch trimmed inline comments with:
+      `gh api repos/{owner}/{repo}/pulls/<number>/comments --jq 'map({id,body,path,line,user: .user.login,html_url})'`
+    - Summarize any actionable feedback, requested changes, approvals, unresolved threads, and failing checks for the user.
     - If no feedback has arrived yet, explicitly say so instead of implying the PR was reviewed.
+
+7.  **Resolve Addressed Review Threads**
+    - If a review comment or thread has already been fully addressed by your latest changes, resolve that thread before reporting back.
+    - Never resolve a thread unless the underlying issue is actually fixed or the user explicitly wants it deferred.
+    - When checking feedback, identify unresolved review threads and match them to the code changes you made.
+    - List review threads with GraphQL so you can get resolvable thread IDs:
+      `gh api graphql -f query='query($owner:String!,$repo:String!,$number:Int!){repository(owner:$owner,name:$repo){pullRequest(number:$number){reviewThreads(first:100){nodes{id,isResolved,isOutdated,comments(first:20){nodes{databaseId,body,path,line,url}}}}}}}' -F owner=<owner> -F repo=<repo> -F number=<number>`
+    - Resolve an addressed thread with:
+      `gh api graphql -f query='mutation($threadId:ID!){resolveReviewThread(input:{threadId:$threadId}){thread{isResolved}}}' -F threadId=<thread-id>`
+    - If you push a follow-up fix for PR feedback, re-check the discussion afterward and resolve any threads that are now addressed.
+    - In your summary to the user, call out which review threads were resolved and which still need action.
 
 ## Common Failures
 
