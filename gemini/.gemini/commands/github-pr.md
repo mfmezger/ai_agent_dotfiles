@@ -96,7 +96,7 @@ Follow this order exactly: confirm branch state, stage, commit, push, handle the
     - Never resolve a thread unless the underlying issue is actually fixed or the user explicitly wants it deferred.
     - When checking feedback, identify unresolved review threads and match them to the code changes you made.
     - List review threads with GraphQL so you can get resolvable thread IDs:
-      `gh api graphql -f query='query($owner:String!,$repo:String!,$number:Int!){repository(owner:$owner,name:$repo){pullRequest(number:$number){reviewThreads(first:100){nodes{id,isResolved,isOutdated,comments(first:20){nodes{databaseId,body,path,line,url}}}}}}}' -F owner=<owner> -F repo=<repo> -f number=<number>`
+      `gh api graphql -f query='query($owner:String!,$repo:String!,$number:Int!){repository(owner:$owner,name:$repo){pullRequest(number:$number){reviewThreads(first:100){nodes{id,isResolved,isOutdated,comments(first:20){nodes{databaseId,body,path,line,url}}}}}}}' -F owner=<owner> -F repo=<repo> -F number=<number>`
     - Resolve an addressed thread with:
       `gh api graphql -f query='mutation($threadId:ID!){resolveReviewThread(input:{threadId:$threadId}){thread{isResolved}}}' -F threadId=<thread-id>`
     - If you push a follow-up fix for PR feedback, re-check the discussion afterward and resolve any threads that are now addressed.
