@@ -31,7 +31,7 @@ write_or_check_file() {
     fi
   else
     mkdir -p "$(dirname "$target_file")"
-    cp "$generated_file" "$target_file"
+    cat "$generated_file" > "$target_file"
     echo "Updated: $target_file"
   fi
 
