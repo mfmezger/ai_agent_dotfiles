@@ -108,7 +108,7 @@ render_context() {
     printf '%s\n\n' "$title"
     printf '%s\n\n' "$intro"
     printf '<!-- Generated from `shared/context/default-coding-guidelines.md` via `./scripts/sync-contexts.sh`. -->\n\n'
-    cat "$SHARED_CONTEXT"
+    awk 1 "$SHARED_CONTEXT"
     printf '\n'
     render_notes "$tool"
     printf '\n'

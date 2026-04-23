@@ -21,7 +21,7 @@ For complex or ambiguous tasks, they help ensure quality and clarity.
 
 ## My Preferences
 
-<!-- Add your personal coding preferences here -->
+<!-- Add shared cross-agent defaults here; changes sync to all generated files. -->
 
 ### Language & Framework Preferences
 
