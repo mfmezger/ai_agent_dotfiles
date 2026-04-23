@@ -1,206 +1,201 @@
 ---
 name: github-pr-feedback
-description: "Use this skill whenever the user asks to look at GitHub PR feedback, PR review comments, review bot output, Gemini/Claude review feedback, or pasted reviewer suggestions and wants a markdown table that separates what should be fixed from what does not need to be fixed. This skill should trigger for PR feedback triage, deciding whether review comments are actionable, and producing a concise markdown report with yes/no emoji decisions and reasoning."
+description: Use this skill whenever the user asks to look at GitHub PR feedback, PR review comments, review bot output, Gemini/Claude review feedback, or pasted reviewer suggestions and wants a markdown table that separates what should be fixed from what does not need to be fixed. This skill should trigger for PR feedback triage, deciding whether review comments are actionable, and producing a concise markdown report with yes/no emoji decisions and reasoning.
+version: 0.1.0
 ---
 
 # GitHub PR Feedback Triage
 
-Turn GitHub pull request feedback into a concise, defensible markdown triage
-report. The goal is to help the user decide which comments require code changes
-and which can be safely declined, deferred, or answered without changing code.
+Review GitHub pull request feedback and turn it into a clean markdown report with
+**two tables**:
 
-## Review Lens
+1. **What does not need to be fixed**
+2. **What should be fixed**
 
-Always keep the `karpathy-guidelines` skill in mind when judging PR feedback.
-Bias toward simple, surgical fixes with clear success criteria:
+Use this skill for both live GitHub PRs and pasted review feedback.
 
-- Do not accept feedback that adds speculative abstractions, broad refactors, or
-  configurability the PR does not need.
-- Do not reject feedback that identifies a concrete bug, unclear assumption, or
-  missing verification just because the fix is inconvenient.
-- Prefer the smallest code or documentation change that resolves the reviewer
-  concern.
-- Surface uncertainty directly in the reasoning instead of pretending the answer
-  is more certain than the evidence supports.
+## Output Contract
 
-## Prerequisites
+Always produce markdown with this structure:
 
-- Use `gh` when feedback must be fetched from GitHub.
-- `gh` must be installed and authenticated for live PR access.
-- If the user pasted the feedback directly, do not fetch from GitHub unless they
-  ask you to verify the current PR state.
+### 1) Table for items that do **not** need to be fixed
 
-## Input Sources
+Use these exact columns:
 
-Prefer the most direct available input:
+| Problem | Description | Should be fixed? | Reasoning |
+| ------- | ----------- | ---------------- | --------- |
 
-1. Pasted feedback in the conversation.
-2. A PR URL or PR number provided by the user.
-3. The PR associated with the current branch.
+For rows in this table, prefer `❌ No` in the **Should be fixed?** column.
 
-If no PR or feedback is available, ask the user for either a PR URL/number or the
-feedback text.
+### 2) Table for items that **should** be fixed
 
-## Fetching GitHub Feedback
+Use the same columns:
 
-Start with the high-level PR data:
+| Problem | Description | Should be fixed? | Reasoning |
+| ------- | ----------- | ---------------- | --------- |
 
-```bash
-gh pr view <pr> --json number,title,url,author,reviewDecision,comments,reviews,latestReviews,files
-```
+For rows in this table, prefer `✅ Yes` in the **Should be fixed?** column.
 
-If the user did not provide `<pr>`, infer it from the current branch and fetch
-the same triage fields:
+## Workflow
 
-```bash
-gh pr view --json number,title,url,author,reviewDecision,comments,reviews,latestReviews,files
-```
+### 1. Gather the feedback source
 
-Fetch inline review threads when line-level comments matter. Replace
-`OWNER`, `REPO`, and `NUMBER` with the PR repository and number:
+Decide which input mode applies:
+
+- **Live GitHub PR**: collect comments from the PR directly.
+- **Pasted feedback**: analyze the pasted review text.
+- **Mixed input**: combine both, but deduplicate overlapping items.
+
+If the user refers to "the PR" and you have GitHub CLI access, inspect the PR
+instead of asking them to paste everything.
+
+### 2. For live GitHub PRs, collect complete feedback
+
+Use the helper script. By default it now outputs the final two-table markdown triage report automatically:
 
 ```bash
-gh api graphql \
-  -f owner='OWNER' \
-  -f name='REPO' \
-  -F number=NUMBER \
-  -f query='
-query($owner: String!, $name: String!, $number: Int!) {
-  repository(owner: $owner, name: $name) {
-    pullRequest(number: $number) {
-      reviewThreads(first: 100) {
-        nodes {
-          isResolved
-          path
-          line
-          originalLine
-          comments(first: 20) {
-            nodes {
-              author { login }
-              body
-              createdAt
-              url
-              diffHunk
-            }
-          }
-        }
-      }
-    }
-  }
-}'
+python ~/.claude/skills/github-pr-feedback/scripts/fetch_feedback.py [PR] [--repo owner/repo]
 ```
 
-Also inspect failed checks if review feedback references CI failures:
+Useful options:
 
 ```bash
-gh pr checks <pr>
+# Current branch PR in current repo
+python ~/.claude/skills/github-pr-feedback/scripts/fetch_feedback.py
+
+# Specific PR number in current repo
+python ~/.claude/skills/github-pr-feedback/scripts/fetch_feedback.py 123
+
+# Specific PR in a repo
+python ~/.claude/skills/github-pr-feedback/scripts/fetch_feedback.py 123 --repo owner/repo
+
+# Raw JSON if you want structured inspection
+python ~/.claude/skills/github-pr-feedback/scripts/fetch_feedback.py 123 --repo owner/repo --json
+
+# Raw collected comments instead of auto-triaged tables
+python ~/.claude/skills/github-pr-feedback/scripts/fetch_feedback.py 123 --repo owner/repo --snapshot
 ```
 
-If GitHub access fails, explain the blocker briefly and ask the user to paste
-the PR feedback. Do not fabricate comments.
+The helper script intentionally gathers:
 
-## Triage Rules
+- PR review summaries/bodies
+- Inline review comments
+- PR issue comments
 
-Classify each distinct problem, not each individual comment. Merge duplicate
-comments that point at the same underlying issue.
+This matters because `gh pr view --json comments` alone does **not** include
+inline review comments.
 
-Use `✅ Yes` (Should Be Fixed) when the feedback identifies:
+Treat the script's default output as a strong first pass, not ground truth. If a
+classification looks wrong, override it in your final response.
 
-- A correctness bug, regression, broken build, failing test, or runtime error.
-- A security, privacy, data-loss, race-condition, or reliability risk.
-- Missing behavior required by the PR description, ticket, or existing contract.
-- A maintainability issue likely to confuse future changes or hide defects.
-- A small requested cleanup that is clearly valid and low-risk to apply.
+### 3. Triage each item
 
-Use `❌ No` (Does Not Need To Be Fixed) when the feedback is:
+Classify every substantive feedback item into one of two buckets.
 
-- Incorrect because it misreads the code or ignores existing behavior.
-- Already handled elsewhere in the PR.
-- Pure preference without a project convention or concrete benefit.
-- Out of scope for this PR and safer as a follow-up.
-- A speculative optimization without evidence or measurable impact.
-- A comment that only needs a written reply, clarification, or documentation
-  pointer rather than a code change.
+#### Usually **should be fixed**
 
-When uncertain, prefer `✅ Yes` only if there is a concrete user-facing,
-correctness, security, or maintainability reason. Otherwise mark `❌ No` and
-explain what evidence would change the decision.
+Mark as `✅ Yes` when the feedback points to:
 
-## Required Output
+- correctness bugs
+- broken behavior or regressions
+- missing tests for meaningful risk
+- security/privacy issues
+- API/contract mismatches
+- clear maintainability problems that will cause confusion or defects
+- documentation mismatches that would mislead users
+- concrete omissions in the PR scope
 
-Always produce exactly two markdown tables in this order:
+#### Usually **does not need to be fixed**
 
-1. `## Does Not Need To Be Fixed`
-2. `## Should Be Fixed`
+Mark as `❌ No` when the feedback is:
 
-Each table must use these exact columns:
+- praise, chatter, or non-actionable commentary
+- a personal preference with no stated project standard
+- already addressed by the current diff or follow-up comments
+- based on a misunderstanding of the code or requirements
+- outside the intended scope of the PR
+- a duplicate of another stronger comment
+- a bot summary that contains no actionable request by itself
+- a speculative suggestion better treated as future work
+
+### 4. Use judgment, not keyword matching
+
+Do not blindly trust bot comments or reviewer confidence.
+
+Check whether the comment is actually supported by:
+
+- the diff
+- surrounding code
+- existing tests
+- PR description/scope
+- follow-up discussion on the thread
+
+If a comment is partially right, split it into separate rows so the final table is
+more precise.
+
+### 5. Deduplicate aggressively
+
+If multiple reviewers raise the same issue:
+
+- keep one consolidated row
+- mention the overlap in the description or reasoning if helpful
+- do not spam the table with repeated rows
+
+### 6. Be concise but specific
+
+For each row:
+
+- **Problem**: short label, 3-8 words when possible
+- **Description**: one concise explanation of the concern
+- **Should be fixed?**: `✅ Yes` or `❌ No`
+- **Reasoning**: brief explanation of why the item is or is not worth fixing
+
+## Recommended Review Heuristics
+
+### Treat as stronger signals
+
+- reproducible bug reports
+- concrete line-level review comments
+- comments tied to tests, types, API contracts, or documented behavior
+- repeated concerns from multiple reviewers
+
+### Treat as weaker signals
+
+- vague stylistic suggestions
+- drive-by opinions without evidence
+- bot-generated summaries without a concrete requested change
+- comments contradicted by the current code
+
+## Handling Ambiguity
+
+If something is borderline:
+
+- choose the bucket you think is best
+- explain the uncertainty in **Reasoning**
+- prefer clarity over hedging
+
+Do **not** create a third table unless the user explicitly asks for one.
+
+## Suggested Response Template
 
 ```markdown
-| Problem | Description | Should Be Fixed | Reasoning |
-| --- | --- | --- | --- |
+## Does not need to be fixed
+
+| Problem | Description | Should be fixed? | Reasoning |
+| ------- | ----------- | ---------------- | --------- |
+| Example | Reviewer suggested renaming a local variable. | ❌ No | Pure preference, no project convention or readability issue demonstrated. |
+
+## Should be fixed
+
+| Problem | Description | Should be fixed? | Reasoning |
+| ------- | ----------- | ---------------- | --------- |
+| Missing test coverage | Reviewer noted an untested failure path in the new logic. | ✅ Yes | The change affects behavior and the missing test leaves a realistic regression risk. |
 ```
 
-Use `❌ No` for every real feedback row in `Does Not Need To Be Fixed`.
-Use `✅ Yes` for every real feedback row in `Should Be Fixed`.
+## Practical Notes
 
-If a section has no entries, include one row that says there were no items:
-
-```markdown
-| None | No PR feedback landed in this category. | ❌ No | No action needed. |
-```
-
-For an empty `Should Be Fixed` section, use:
-
-```markdown
-| None | No PR feedback landed in this category. | ❌ No | No fixes identified. |
-```
-
-Keep rows concise:
-
-- `Problem`: short noun phrase, ideally with file/path if available.
-- `Description`: summarize the reviewer concern in one sentence.
-- `Should Be Fixed`: only `✅ Yes` or `❌ No`.
-- `Reasoning`: explain the decision, including scope, risk, and evidence.
-- Escape `|` characters inside table cells so the markdown table stays valid.
-
-After the two tables, add a short `## Summary` section with:
-
-- Count of `✅ Yes` items.
-- Count of `❌ No` items.
-- The highest-priority fix, if any.
-
-Do not include a long raw dump of GitHub comments unless the user asks.
-
-## Decision Quality Checklist
-
-Before finalizing the report:
-
-- Verify that every meaningful review comment is represented or merged into a
-  row.
-- Check resolved comments too, because they may still explain important context.
-- Separate "needs a code change" from "needs a reply".
-- Do not mark a comment as unnecessary just because it is inconvenient.
-- Do not mark a comment as required just because a reviewer wrote it.
-- Tie the reasoning to concrete code behavior, project conventions, or PR scope.
-
-## Example Output
-
-```markdown
-## Does Not Need To Be Fixed
-
-| Problem | Description | Should Be Fixed | Reasoning |
-| --- | --- | --- | --- |
-| Rename helper | Reviewer suggested renaming `buildPayload` to `makePayload`. | ❌ No | The current name matches nearby helpers and the suggestion is stylistic without improving clarity. |
-
-## Should Be Fixed
-
-| Problem | Description | Should Be Fixed | Reasoning |
-| --- | --- | --- | --- |
-| Missing null guard in webhook handler | Reviewer noted that `event.user` can be absent for system events. | ✅ Yes | This can cause a runtime exception on valid webhook payloads, so the handler should guard before reading user fields. |
-
-## Summary
-
-- `✅ Yes`: 1 item.
-- `❌ No`: 1 item.
-- Highest priority: add the webhook null guard because it prevents a runtime failure.
-```
+- If there is no live PR context, ask the user to paste the review feedback.
+- If there are no items for one section, still include the section and write a
+  single placeholder row.
+- Keep the final report skimmable.
+- Prefer actionable synthesis over exhaustive transcription.
