@@ -1,4 +1,4 @@
-# Claude Code User-Level Guidelines
+# OpenCode User-Level Guidelines
 
 This file provides global context and guidelines that apply across all projects.
 
@@ -49,6 +49,5 @@ For complex or ambiguous tasks, they help ensure quality and clarity.
 
 ## Tool Notes
 
-- Project-specific guidance should live in each project's `.claude/CLAUDE.md`.
-- Invoke `/karpathy-guidelines` skill to explicitly apply stricter coding discipline.
+- Project-specific guidance should live in repository `AGENTS.md` files.
 

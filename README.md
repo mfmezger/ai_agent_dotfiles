@@ -68,7 +68,7 @@ The repository uses Stow to symlink configurations to their respective home dire
 ```text
 ~/ai_agent_dotfiles/
 ├── claude/ (.claude/)       # Settings, context, agents, skills, rules for Claude Code
-├── opencode/ (.config/)     # Configs, agents, skills, rules for OpenCode
+├── opencode/ (.config/)     # Global context, configs, agents, skills, and rules for OpenCode
 ├── codex/ (.codex/)         # Global context, skills, and rules for Codex CLI
 ├── gemini/ (.gemini/)       # Global context, skills, and custom commands for Gemini CLI
 ├── pi/ (.pi/)               # Global context, settings, themes, and skills for pi
@@ -97,6 +97,8 @@ The repository uses Stow to symlink configurations to their respective home dire
   `shared/context/default-coding-guidelines.md`.
 - **Claude global context**: `claude/.claude/CLAUDE.md` stows to
   `~/.claude/CLAUDE.md`.
+- **OpenCode global context**: `opencode/.config/opencode/AGENTS.md` stows to
+  `~/.config/opencode/AGENTS.md`.
 - **Codex global context**: `codex/.codex/AGENTS.md` stows to
   `~/.codex/AGENTS.md`.
 - **Gemini global context**: `gemini/.gemini/GEMINI.md` stows to
@@ -141,6 +143,7 @@ Managed targets:
 
 - `shared/context/default-coding-guidelines.md` -> source for generated global context files
 - `claude/.claude/CLAUDE.md` -> generated global Claude context
+- `opencode/.config/opencode/AGENTS.md` -> generated global OpenCode context
 - `codex/.codex/AGENTS.md` -> generated global Codex context
 - `gemini/.gemini/GEMINI.md` -> generated global Gemini context
 - `pi/.pi/agent/AGENTS.md` -> generated global pi context
@@ -163,6 +166,7 @@ stow -R claude opencode codex gemini pi
 
 # 3) Verify links
 ls -la ~/.claude/CLAUDE.md
+ls -la ~/.config/opencode/AGENTS.md
 ls -la ~/.codex/AGENTS.md
 ls -la ~/.gemini/GEMINI.md
 ls -la ~/.pi/agent/AGENTS.md

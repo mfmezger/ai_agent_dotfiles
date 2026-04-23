@@ -62,6 +62,7 @@ claude/.claude/
 └── rules/             # User-level rules (.md files)
 
 opencode/.config/opencode/
+├── AGENTS.md         # User-level context
 ├── opencode.json      # Main config with permissions
 ├── agents/            # Custom agents (.md files)
 ├── skills/            # Skills (directories with SKILL.md)

@@ -48,11 +48,9 @@ render_notes() {
 
 - Project-specific guidance should live in each project's `.claude/CLAUDE.md`.
 - Invoke `/karpathy-guidelines` skill to explicitly apply stricter coding discipline.
-
-@RTK.md
 EOF
       ;;
-    codex|pi)
+    opencode|codex|pi)
       cat <<'EOF'
 ## Tool Notes
 
@@ -82,6 +80,10 @@ render_context() {
   case "$tool" in
     claude)
       title="# Claude Code User-Level Guidelines"
+      intro="This file provides global context and guidelines that apply across all projects."
+      ;;
+    opencode)
+      title="# OpenCode User-Level Guidelines"
       intro="This file provides global context and guidelines that apply across all projects."
       ;;
     codex)
@@ -120,6 +122,7 @@ trap 'rm -rf "$tmp_dir"' EXIT
 
 tool_targets=(
   "claude:claude/.claude/CLAUDE.md"
+  "opencode:opencode/.config/opencode/AGENTS.md"
   "codex:codex/.codex/AGENTS.md"
   "pi:pi/.pi/agent/AGENTS.md"
   "gemini:gemini/.gemini/GEMINI.md"
