@@ -156,12 +156,15 @@ class TriageRow:
 
 
 def run_gh(args: list[str], expect_json: bool = True) -> Any:
-    result = subprocess.run(
-        ["gh", *args],
-        check=False,
-        capture_output=True,
-        text=True,
-    )
+    try:
+        result = subprocess.run(
+            ["gh", *args],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError:
+        raise SystemExit("Error: 'gh' (GitHub CLI) is not installed or not in PATH. Please install it to use this skill.")
     if result.returncode != 0:
         message = result.stderr.strip() or result.stdout.strip() or "gh command failed"
         raise SystemExit(message)
