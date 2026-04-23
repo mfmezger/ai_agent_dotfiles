@@ -77,7 +77,7 @@ The repository uses Stow to symlink configurations to their respective home dire
 ### Key Components
 
 - **Agents**: Specialized sub-agents (e.g., `code-roaster`, `refactorer`, `detective`) for specific coding tasks.
-- **Skills**: Reusable capabilities like `karpathy-guidelines`, `generate-image`, and Jira/Confluence integration.
+- **Skills**: Reusable capabilities like `karpathy-guidelines`, `generate-image`, `github-pr-feedback`, and Jira/Confluence integration.
 - **Rules**: Always-active instructions and permissions.
 
 ## 🛠️ Usage & Workflow
