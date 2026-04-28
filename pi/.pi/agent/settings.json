@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.69.0",
+  "lastChangelogVersion": "0.70.5",
   "skills": [
     "~/ai_agent_dotfiles/shared/skills"
   ],
@@ -15,6 +15,6 @@
   ],
   "quietStartup": true,
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.4",
+  "defaultModel": "gpt-5.5",
   "defaultThinkingLevel": "high"
 }
