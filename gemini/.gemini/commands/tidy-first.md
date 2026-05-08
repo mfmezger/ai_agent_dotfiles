@@ -82,8 +82,8 @@ Separate all changes into two distinct types:
 
 ## Commit Discipline
 
-Follow the existing [`commit`](../commit/SKILL.md) skill for the actual subject
-format. On top of that, signal change type clearly:
+Follow the existing [`commit`](https://github.com/mfmezger/ai_agent_dotfiles/blob/main/shared/skills/commit/SKILL.md)
+skill for the actual subject format. On top of that, signal change type clearly:
 
 - Structural changes: `refactor` (or a `tidy` prefix in the summary)
 - Behavioral changes: `feat` (new functionality) or `fix` (bug fix)
