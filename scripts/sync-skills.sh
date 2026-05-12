@@ -13,7 +13,7 @@ fi
 ensure_skill_symlink() {
   local skill_name="$1"
   local target="$2"
-  local rel_target="../../../shared/skills/$skill_name"
+  local rel_target="${3:-../../../shared/skills/$skill_name}"
 
   mkdir -p "$(dirname "$target")"
 
@@ -172,6 +172,12 @@ for source_file in "$ROOT_DIR"/shared/skills/*/SKILL.md; do
     sync_failed=1
   fi
 
+  if ! ensure_skill_symlink "$skill_name" \
+    "$ROOT_DIR/opencode/.config/opencode/skills/$skill_name" \
+    "../../../../claude/.claude/skills/$skill_name"; then
+    sync_failed=1
+  fi
+
   render_gemini_command "$source_file" "$tmp_dir/gemini.md" "$skill_name"
   if ! write_or_check_file "$tmp_dir/gemini.md" \
     "$ROOT_DIR/gemini/.gemini/commands/$skill_name.md"; then
@@ -188,6 +194,9 @@ if ! cleanup_stale_links "$ROOT_DIR/codex/.codex/skills"; then
   sync_failed=1
 fi
 if ! cleanup_stale_links "$ROOT_DIR/gemini/.gemini/skills"; then
+  sync_failed=1
+fi
+if ! cleanup_stale_links "$ROOT_DIR/opencode/.config/opencode/skills"; then
   sync_failed=1
 fi
 if ! cleanup_stale_commands "$ROOT_DIR/gemini/.gemini/commands"; then
