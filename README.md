@@ -59,6 +59,7 @@ scripts/    # Sync helpers
 
 | Name | Short description |
 | --- | --- |
+| `building-pydantic-ai-agents` | Build Pydantic AI agents: tools, capabilities, structured output, streaming, testing, and multi-agent patterns. |
 | `fastapi` | Build and review FastAPI services, routers, schemas, and tests. |
 | `go-engineering` | Write, debug, refactor, and review idiomatic Go code. |
 | `mcp-builder` | Build high-quality MCP servers for external service integrations. |
