@@ -16,17 +16,22 @@ ensure_skill_symlink() {
 
   mkdir -p "$(dirname "$target")"
 
-  # Compute relative path from the target's parent dir to shared/skills/<name>
+  # Compute relative path from the target's parent dir to shared/skills/<name>.
+  # Strip ROOT_DIR prefix and count remaining path components to derive depth.
+  # When target_parent_abs == ROOT_DIR the remainder is empty and depth is 0.
   local target_parent_abs
   target_parent_abs="$(cd "$(dirname "$target")" && pwd)"
+  local rel_path="${target_parent_abs#"$ROOT_DIR"}"
+  rel_path="${rel_path#/}"
   local rel_prefix=""
-  local rel_path="${target_parent_abs#$ROOT_DIR/}"
-  local depth
-  depth="$(awk -F'/' '{print NF}' <<< "$rel_path")"
-  local i
-  for ((i = 0; i < depth; i++)); do
-    rel_prefix+="../"
-  done
+  if [[ -n "$rel_path" ]]; then
+    local slashes="${rel_path//[^\/]}"
+    local depth=$((${#slashes} + 1))
+    local i
+    for ((i = 0; i < depth; i++)); do
+      rel_prefix+="../"
+    done
+  fi
   local rel_target="${rel_prefix}shared/skills/$skill_name"
 
   if [[ "$MODE" == "--check" ]]; then
