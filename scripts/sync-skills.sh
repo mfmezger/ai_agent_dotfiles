@@ -13,9 +13,21 @@ fi
 ensure_skill_symlink() {
   local skill_name="$1"
   local target="$2"
-  local rel_target="../../../shared/skills/$skill_name"
 
   mkdir -p "$(dirname "$target")"
+
+  # Compute relative path from the target's parent dir to shared/skills/<name>
+  local target_parent_abs
+  target_parent_abs="$(cd "$(dirname "$target")" && pwd)"
+  local rel_prefix=""
+  local rel_path="${target_parent_abs#$ROOT_DIR/}"
+  local depth
+  depth="$(awk -F'/' '{print NF}' <<< "$rel_path")"
+  local i
+  for ((i = 0; i < depth; i++)); do
+    rel_prefix+="../"
+  done
+  local rel_target="${rel_prefix}shared/skills/$skill_name"
 
   if [[ "$MODE" == "--check" ]]; then
     if [[ ! -L "$target" ]]; then
@@ -172,6 +184,11 @@ for source_file in "$ROOT_DIR"/shared/skills/*/SKILL.md; do
     sync_failed=1
   fi
 
+  if ! ensure_skill_symlink "$skill_name" \
+    "$ROOT_DIR/pi/.pi/agent/skills/$skill_name"; then
+    sync_failed=1
+  fi
+
   render_gemini_command "$source_file" "$tmp_dir/gemini.md" "$skill_name"
   if ! write_or_check_file "$tmp_dir/gemini.md" \
     "$ROOT_DIR/gemini/.gemini/commands/$skill_name.md"; then
@@ -188,6 +205,9 @@ if ! cleanup_stale_links "$ROOT_DIR/codex/.codex/skills"; then
   sync_failed=1
 fi
 if ! cleanup_stale_links "$ROOT_DIR/gemini/.gemini/skills"; then
+  sync_failed=1
+fi
+if ! cleanup_stale_links "$ROOT_DIR/pi/.pi/agent/skills"; then
   sync_failed=1
 fi
 if ! cleanup_stale_commands "$ROOT_DIR/gemini/.gemini/commands"; then
