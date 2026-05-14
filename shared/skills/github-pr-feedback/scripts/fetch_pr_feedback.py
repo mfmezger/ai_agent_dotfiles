@@ -61,21 +61,23 @@ query($owner: String!, $name: String!, $number: Int!) {
 """
 
 
-def run_json(cmd: list[str]) -> Any:
+def _run(cmd: list[str]) -> str:
     result = subprocess.run(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if result.returncode != 0:
-        raise RuntimeError(f"Command failed: {' '.join(cmd)}\n{result.stderr.strip()}")
-    stdout = result.stdout.strip()
+        message = result.stderr.strip() or result.stdout.strip()
+        raise RuntimeError(f"Command failed: {' '.join(cmd)}\n{message}")
+    return result.stdout.strip()
+
+
+def run_json(cmd: list[str]) -> Any:
+    stdout = _run(cmd)
     if not stdout:
         return None
     return json.loads(stdout)
 
 
 def run_text(cmd: list[str]) -> str:
-    result = subprocess.run(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    if result.returncode != 0:
-        raise RuntimeError(f"Command failed: {' '.join(cmd)}\n{result.stderr.strip()}")
-    return result.stdout.strip()
+    return _run(cmd)
 
 
 def parse_pr_url(url: str) -> tuple[str, str, int] | None:
@@ -227,7 +229,7 @@ def main() -> int:
         print(output)
 
     if args.summary:
-        print("\n" + build_summary(payload), file=sys.stderr if args.out else sys.stdout)
+        print("\n" + build_summary(payload), file=sys.stderr)
 
     return 0
 
