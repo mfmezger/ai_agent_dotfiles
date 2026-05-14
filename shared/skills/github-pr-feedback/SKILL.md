@@ -27,6 +27,9 @@ Bias toward simple, surgical fixes with clear success criteria:
 
 - Use `gh` when feedback must be fetched from GitHub.
 - `gh` must be installed and authenticated for live PR access.
+- Run bundled Python scripts with `uv run` when available. Use `uvx` only for
+  external Python command-line tools; this skill's local helper script should be
+  run with `uv run`.
 - If the user pasted the feedback directly, do not fetch from GitHub unless they
   ask you to verify the current PR state.
 
@@ -43,61 +46,44 @@ feedback text.
 
 ## Fetching GitHub Feedback
 
-Start with the high-level PR data:
+Prefer the bundled fetch script because it collects the PR summary, top-level
+comments, reviews, inline review comments, review thread resolution state, file
+list, and checks in one repeatable command.
+
+Resolve the script path relative to this skill directory and run it with `uv run`:
 
 ```bash
-gh pr view <pr> --json number,title,url,author,reviewDecision,comments,reviews,latestReviews,files
+uv run scripts/fetch_pr_feedback.py <pr-url-or-number> --out /tmp/pr-feedback.json --summary
 ```
 
-If the user did not provide `<pr>`, infer it from the current branch and fetch
-the same triage fields:
+Examples:
 
 ```bash
-gh pr view --json number,title,url,author,reviewDecision,comments,reviews,latestReviews,files
+# URL from the user
+uv run scripts/fetch_pr_feedback.py https://github.com/OWNER/REPO/pull/123 --out /tmp/pr-feedback.json --summary
+
+# PR number in the current repo
+uv run scripts/fetch_pr_feedback.py 123 --out /tmp/pr-feedback.json --summary
+
+# Current branch PR
+uv run scripts/fetch_pr_feedback.py --out /tmp/pr-feedback.json --summary
+
+# PR number in a different repo
+uv run scripts/fetch_pr_feedback.py 123 --repo OWNER/REPO --out /tmp/pr-feedback.json --summary
 ```
 
-Fetch inline review threads when line-level comments matter. Replace
-`OWNER`, `REPO`, and `NUMBER` with the PR repository and number:
+Use the JSON payload as the source of truth for triage:
 
-```bash
-gh api graphql \
-  -f owner='OWNER' \
-  -f name='REPO' \
-  -F number=NUMBER \
-  -f query='
-query($owner: String!, $name: String!, $number: Int!) {
-  repository(owner: $owner, name: $name) {
-    pullRequest(number: $number) {
-      reviewThreads(first: 100) {
-        nodes {
-          isResolved
-          path
-          line
-          originalLine
-          comments(first: 20) {
-            nodes {
-              author { login }
-              body
-              createdAt
-              url
-              diffHunk
-            }
-          }
-        }
-      }
-    }
-  }
-}'
-```
+- `pr.comments`: top-level PR comments
+- `pr.reviews` / `pr.latestReviews`: submitted review summaries
+- `inline_comments`: REST pull-review comments with diff hunks and URLs
+- `review_threads`: GraphQL review threads with `isResolved` state
+- `checks`: check-run summary, or an informational error when no checks exist
 
-Also inspect failed checks if review feedback references CI failures:
-
-```bash
-gh pr checks <pr>
-```
-
-If GitHub access fails, explain the blocker briefly and ask the user to paste
-the PR feedback. Do not fabricate comments.
+If the script fails, fall back to `gh pr view`, `gh api .../pulls/<number>/comments`,
+and the GraphQL `reviewThreads` query manually. If GitHub access fails, explain
+the blocker briefly and ask the user to paste the PR feedback. Do not fabricate
+comments.
 
 ## Triage Rules
 
