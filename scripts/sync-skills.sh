@@ -93,7 +93,9 @@ render_gemini_command() {
       finished_frontmatter == 1 { print }
     ' "$source_file" \
       | sed "1s/^# .*/# $(echo "$skill_name" | sed 's/\b\(.\)/\u\1/g') Workflow Command/" \
-      | sed "s/This skill guides/This command guides/"
+      | sed "s/This skill guides/This command guides/" \
+      | sed "s#this skill directory#this command's matching skill directory (../skills/$skill_name)#g" \
+      | sed "s#uv run scripts/#uv run ../skills/$skill_name/scripts/#g"
   } > "$output_file"
 }
 

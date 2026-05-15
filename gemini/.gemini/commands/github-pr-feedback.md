@@ -50,26 +50,26 @@ Prefer the bundled fetch script because it collects the PR summary, top-level
 comments, reviews, inline review comments, review thread resolution state, file
 list, and checks in one repeatable command.
 
-Resolve the script path relative to this skill directory and run it with `uv run`:
+Resolve the script path relative to this command's matching skill directory (../skills/github-pr-feedback) and run it with `uv run`:
 
 ```bash
-uv run scripts/fetch_pr_feedback.py <pr-url-or-number> --out /tmp/pr-feedback.json --summary
+uv run ../skills/github-pr-feedback/scripts/fetch_pr_feedback.py <pr-url-or-number> --out /tmp/pr-feedback.json --summary
 ```
 
 Examples:
 
 ```bash
 # URL from the user
-uv run scripts/fetch_pr_feedback.py https://github.com/OWNER/REPO/pull/123 --out /tmp/pr-feedback.json --summary
+uv run ../skills/github-pr-feedback/scripts/fetch_pr_feedback.py https://github.com/OWNER/REPO/pull/123 --out /tmp/pr-feedback.json --summary
 
 # PR number in the current repo
-uv run scripts/fetch_pr_feedback.py 123 --out /tmp/pr-feedback.json --summary
+uv run ../skills/github-pr-feedback/scripts/fetch_pr_feedback.py 123 --out /tmp/pr-feedback.json --summary
 
 # Current branch PR
-uv run scripts/fetch_pr_feedback.py --out /tmp/pr-feedback.json --summary
+uv run ../skills/github-pr-feedback/scripts/fetch_pr_feedback.py --out /tmp/pr-feedback.json --summary
 
 # PR number in a different repo
-uv run scripts/fetch_pr_feedback.py 123 --repo OWNER/REPO --out /tmp/pr-feedback.json --summary
+uv run ../skills/github-pr-feedback/scripts/fetch_pr_feedback.py 123 --repo OWNER/REPO --out /tmp/pr-feedback.json --summary
 ```
 
 Use the JSON payload as the source of truth for triage:
