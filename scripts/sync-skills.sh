@@ -13,26 +13,29 @@ fi
 ensure_skill_symlink() {
   local skill_name="$1"
   local target="$2"
+  local rel_target="${3:-}"
 
   mkdir -p "$(dirname "$target")"
 
-  # Compute relative path from the target's parent dir to shared/skills/<name>.
-  # Strip ROOT_DIR prefix and count remaining path components to derive depth.
-  # When target_parent_abs == ROOT_DIR the remainder is empty and depth is 0.
-  local target_parent_abs
-  target_parent_abs="$(cd "$(dirname "$target")" && pwd)"
-  local rel_path="${target_parent_abs#"$ROOT_DIR"}"
-  rel_path="${rel_path#/}"
-  local rel_prefix=""
-  if [[ -n "$rel_path" ]]; then
-    local slashes="${rel_path//[^\/]}"
-    local depth=$((${#slashes} + 1))
-    local i
-    for ((i = 0; i < depth; i++)); do
-      rel_prefix+="../"
-    done
+  if [[ -z "$rel_target" ]]; then
+    # Compute relative path from the target's parent dir to shared/skills/<name>.
+    # Strip ROOT_DIR prefix and count remaining path components to derive depth.
+    # When target_parent_abs == ROOT_DIR the remainder is empty and depth is 0.
+    local target_parent_abs
+    target_parent_abs="$(cd "$(dirname "$target")" && pwd)"
+    local rel_path="${target_parent_abs#"$ROOT_DIR"}"
+    rel_path="${rel_path#/}"
+    local rel_prefix=""
+    if [[ -n "$rel_path" ]]; then
+      local without_slashes="${rel_path//\//}"
+      local depth=$((${#rel_path} - ${#without_slashes} + 1))
+      local i
+      for ((i = 0; i < depth; i++)); do
+        rel_prefix+="../"
+      done
+    fi
+    rel_target="${rel_prefix}shared/skills/$skill_name"
   fi
-  local rel_target="${rel_prefix}shared/skills/$skill_name"
 
   if [[ "$MODE" == "--check" ]]; then
     if [[ ! -L "$target" ]]; then
@@ -190,6 +193,12 @@ for source_file in "$ROOT_DIR"/shared/skills/*/SKILL.md; do
   fi
 
   if ! ensure_skill_symlink "$skill_name" \
+    "$ROOT_DIR/opencode/.config/opencode/skills/$skill_name" \
+    "../../../../claude/.claude/skills/$skill_name"; then
+    sync_failed=1
+  fi
+
+  if ! ensure_skill_symlink "$skill_name" \
     "$ROOT_DIR/pi/.pi/agent/skills/$skill_name"; then
     sync_failed=1
   fi
@@ -210,6 +219,9 @@ if ! cleanup_stale_links "$ROOT_DIR/codex/.codex/skills"; then
   sync_failed=1
 fi
 if ! cleanup_stale_links "$ROOT_DIR/gemini/.gemini/skills"; then
+  sync_failed=1
+fi
+if ! cleanup_stale_links "$ROOT_DIR/opencode/.config/opencode/skills"; then
   sync_failed=1
 fi
 if ! cleanup_stale_links "$ROOT_DIR/pi/.pi/agent/skills"; then
