@@ -63,6 +63,9 @@ render_gemini_command() {
   local skill_name="$3"
 
   local description
+  local command_script_prefix
+  local escaped_command_script_prefix
+
   description="$(awk '
     BEGIN { in_frontmatter = 0 }
     /^---$/ && in_frontmatter == 0 { in_frontmatter = 1; next }
@@ -73,6 +76,8 @@ render_gemini_command() {
       print
     }
   ' "$source_file")"
+  command_script_prefix="../skills/$skill_name/scripts/"
+  escaped_command_script_prefix="$(printf '%s' "$command_script_prefix" | sed 's/[&#\\]/\\&/g')"
 
   {
     echo "---"
@@ -94,7 +99,7 @@ render_gemini_command() {
     ' "$source_file" \
       | sed "1s/^# .*/# $(echo "$skill_name" | sed 's/\b\(.\)/\u\1/g') Workflow Command/" \
       | sed "s/This skill guides/This command guides/" \
-      | sed "s#uv run[[:space:]][[:space:]]*scripts/#uv run ../skills/$skill_name/scripts/#g"
+      | sed "s#uv run[[:space:]][[:space:]]*scripts/#uv run ${escaped_command_script_prefix}#g"
   } > "$output_file"
 }
 
