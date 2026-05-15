@@ -50,7 +50,7 @@ Prefer the bundled fetch script because it collects the PR summary, top-level
 comments, reviews, inline review comments, review thread resolution state, file
 list, and checks in one repeatable command.
 
-Resolve the script path relative to this skill directory and run it with `uv run`:
+Run the bundled fetch script with `uv run`:
 
 ```bash
 uv run scripts/fetch_pr_feedback.py <pr-url-or-number> --out /tmp/pr-feedback.json --summary

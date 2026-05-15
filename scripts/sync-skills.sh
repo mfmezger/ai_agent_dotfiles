@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT_DIR="$(cd -- "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MODE="${1:-write}"
 
 if [[ "$MODE" != "write" && "$MODE" != "--check" ]]; then
@@ -22,7 +22,7 @@ ensure_skill_symlink() {
     # Strip ROOT_DIR prefix and count remaining path components to derive depth.
     # When target_parent_abs == ROOT_DIR the remainder is empty and depth is 0.
     local target_parent_abs
-    target_parent_abs="$(cd "$(dirname "$target")" && pwd)"
+    target_parent_abs="$(cd -- "$(dirname "$target")" && pwd)"
     local rel_path="${target_parent_abs#"$ROOT_DIR"}"
     rel_path="${rel_path#/}"
     local rel_prefix=""
@@ -94,8 +94,7 @@ render_gemini_command() {
     ' "$source_file" \
       | sed "1s/^# .*/# $(echo "$skill_name" | sed 's/\b\(.\)/\u\1/g') Workflow Command/" \
       | sed "s/This skill guides/This command guides/" \
-      | sed "s#this skill directory#this command's matching skill directory (../skills/$skill_name)#g" \
-      | sed "s#uv run scripts/#uv run ../skills/$skill_name/scripts/#g"
+      | sed "s#uv run[[:space:]][[:space:]]*scripts/#uv run ../skills/$skill_name/scripts/#g"
   } > "$output_file"
 }
 
