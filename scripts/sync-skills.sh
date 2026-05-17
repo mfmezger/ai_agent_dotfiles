@@ -27,6 +27,7 @@ ensure_skill_symlink() {
     rel_path="${rel_path#/}"
     local rel_prefix=""
     if [[ -n "$rel_path" ]]; then
+      rel_path="${rel_path%/}"
       local without_slashes="${rel_path//\//}"
       local depth=$((${#rel_path} - ${#without_slashes} + 1))
       local i
@@ -99,7 +100,7 @@ render_gemini_command() {
     ' "$source_file" \
       | sed "1s/^# .*/# $(echo "$skill_name" | sed 's/\b\(.\)/\u\1/g') Workflow Command/" \
       | sed "s/This skill guides/This command guides/" \
-      | sed "s#uv run[[:space:]][[:space:]]*scripts/#uv run ${escaped_command_script_prefix}#g"
+      | sed "s#uv run[[:space:]][[:space:]]*\\(\\./\\)\\{0,1\\}scripts/#uv run ${escaped_command_script_prefix}#g"
   } > "$output_file"
 }
 
