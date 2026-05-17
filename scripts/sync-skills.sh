@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT_DIR="$(cd -- "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MODE="${1:-write}"
 
 if [[ "$MODE" != "write" && "$MODE" != "--check" ]]; then
@@ -13,9 +13,30 @@ fi
 ensure_skill_symlink() {
   local skill_name="$1"
   local target="$2"
-  local rel_target="${3:-../../../shared/skills/$skill_name}"
+  local rel_target="${3:-}"
 
   mkdir -p "$(dirname "$target")"
+
+  if [[ -z "$rel_target" ]]; then
+    # Compute relative path from the target's parent dir to shared/skills/<name>.
+    # Strip ROOT_DIR prefix and count remaining path components to derive depth.
+    # When target_parent_abs == ROOT_DIR the remainder is empty and depth is 0.
+    local target_parent_abs
+    target_parent_abs="$(cd -- "$(dirname "$target")" && pwd)"
+    local rel_path="${target_parent_abs#"$ROOT_DIR"}"
+    rel_path="${rel_path#/}"
+    local rel_prefix=""
+    if [[ -n "$rel_path" ]]; then
+      rel_path="${rel_path%/}"
+      local without_slashes="${rel_path//\//}"
+      local depth=$((${#rel_path} - ${#without_slashes} + 1))
+      local i
+      for ((i = 0; i < depth; i++)); do
+        rel_prefix+="../"
+      done
+    fi
+    rel_target="${rel_prefix}shared/skills/$skill_name"
+  fi
 
   if [[ "$MODE" == "--check" ]]; then
     if [[ ! -L "$target" ]]; then
@@ -43,6 +64,9 @@ render_gemini_command() {
   local skill_name="$3"
 
   local description
+  local command_script_prefix
+  local escaped_command_script_prefix
+
   description="$(awk '
     BEGIN { in_frontmatter = 0 }
     /^---$/ && in_frontmatter == 0 { in_frontmatter = 1; next }
@@ -53,6 +77,8 @@ render_gemini_command() {
       print
     }
   ' "$source_file")"
+  command_script_prefix="../skills/$skill_name/scripts/"
+  escaped_command_script_prefix="$(printf '%s' "$command_script_prefix" | sed 's/[&#\\]/\\&/g')"
 
   {
     echo "---"
@@ -73,7 +99,8 @@ render_gemini_command() {
       finished_frontmatter == 1 { print }
     ' "$source_file" \
       | sed "1s/^# .*/# $(echo "$skill_name" | sed 's/\b\(.\)/\u\1/g') Workflow Command/" \
-      | sed "s/This skill guides/This command guides/"
+      | sed "s/This skill guides/This command guides/" \
+      | sed "s#uv run[[:space:]][[:space:]]*\\(\\./\\)\\{0,1\\}scripts/#uv run ${escaped_command_script_prefix}#g"
   } > "$output_file"
 }
 
@@ -178,6 +205,11 @@ for source_file in "$ROOT_DIR"/shared/skills/*/SKILL.md; do
     sync_failed=1
   fi
 
+  if ! ensure_skill_symlink "$skill_name" \
+    "$ROOT_DIR/pi/.pi/agent/skills/$skill_name"; then
+    sync_failed=1
+  fi
+
   render_gemini_command "$source_file" "$tmp_dir/gemini.md" "$skill_name"
   if ! write_or_check_file "$tmp_dir/gemini.md" \
     "$ROOT_DIR/gemini/.gemini/commands/$skill_name.md"; then
@@ -197,6 +229,9 @@ if ! cleanup_stale_links "$ROOT_DIR/gemini/.gemini/skills"; then
   sync_failed=1
 fi
 if ! cleanup_stale_links "$ROOT_DIR/opencode/.config/opencode/skills"; then
+  sync_failed=1
+fi
+if ! cleanup_stale_links "$ROOT_DIR/pi/.pi/agent/skills"; then
   sync_failed=1
 fi
 if ! cleanup_stale_commands "$ROOT_DIR/gemini/.gemini/commands"; then
