@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PROTOTYPE — short description</title>
+  <!--
+    Template: prototype.html
+    Use for: interactive prototypes, tunable demos, single-purpose editors.
+    Conventions:
+      - Controls on the left, live preview on the right (stacks on mobile).
+      - Persist state in localStorage so reload doesn't wipe the work.
+      - "Copy as JSON" / "Copy as prompt" export buttons — this closes the loop.
+      - "Reset to defaults" button.
+      - Vanilla JS, no framework, no build step.
+  -->
+  <style>
+    :root {
+      --fg: #1a202c; --muted: #4a5568;
+      --bg: #ffffff; --bg-soft: #f7fafc;
+      --border: #e2e8f0; --accent: #2b6cb0;
+      --ok: #2f855a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e2e8f0; --muted: #a0aec0;
+        --bg: #1a202c; --bg-soft: #2d3748;
+        --border: #4a5568; --accent: #63b3ed;
+      }
+    }
+    * { box-sizing: border-box; }
+    html { color-scheme: light dark; }
+    body {
+      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--fg); background: var(--bg);
+      margin: 0; padding: 1.5rem;
+    }
+    h1 { font-size: 1.5rem; margin: 0 0 .25rem; }
+    .meta { color: var(--muted); margin: 0 0 1.5rem; font-size: .9rem; }
+
+    .layout {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: 320px 1fr;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    @media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
+
+    .panel {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+    .panel h2 { margin: 0 0 1rem; font-size: 1rem;
+                text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+
+    .field { margin-bottom: 1rem; }
+    .field label { display: block; font-size: .85rem; color: var(--muted); margin-bottom: .3rem; }
+    .field .row { display: flex; align-items: center; gap: .6rem; }
+    .field input[type=range] { flex: 1; }
+    .field input[type=text], .field input[type=number], .field select, .field textarea {
+      width: 100%; padding: .4rem .55rem;
+      border: 1px solid var(--border); border-radius: 4px;
+      background: var(--bg); color: var(--fg); font: inherit;
+    }
+    .value { min-width: 3.5rem; text-align: right;
+             font-family: ui-monospace, Menlo, monospace; font-size: .85rem; color: var(--fg); }
+
+    .actions { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 1.25rem; }
+    button {
+      font: inherit; padding: .45rem .85rem;
+      border: 1px solid var(--border); border-radius: 4px;
+      background: var(--bg); color: var(--fg);
+      cursor: pointer;
+    }
+    button.primary { background: var(--accent); color: white; border-color: var(--accent); }
+    button:active { transform: translateY(1px); }
+
+    .preview {
+      min-height: 320px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 2rem;
+    }
+
+    /* Example preview target — replace with whatever you're prototyping. */
+    #target {
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all .3s ease;
+      color: white;
+    }
+
+    .toast {
+      position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%);
+      background: var(--ok); color: white; padding: .55rem 1rem; border-radius: 4px;
+      opacity: 0; transition: opacity .2s ease; pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <h1>PROTOTYPE — short description</h1>
+  <p class="meta">Tune the parameters on the left. Use "Copy params" to send the final values back to the agent.</p>
+
+  <div class="layout">
+
+    <section class="panel">
+      <h2>Controls</h2>
+
+      <div class="field">
+        <label for="duration">Animation duration <span class="value" id="duration-v">300ms</span></label>
+        <div class="row">
+          <input type="range" id="duration" min="0" max="1000" step="50" value="300">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="color">Final color</label>
+        <input type="text" id="color" value="#6b46c1">
+      </div>
+
+      <div class="field">
+        <label for="label">Button label</label>
+        <input type="text" id="label" value="Checkout">
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="copy-json">Copy as JSON</button>
+        <button id="copy-prompt">Copy as prompt</button>
+        <button id="reset">Reset</button>
+      </div>
+    </section>
+
+    <section class="panel preview">
+      <button id="target" style="background:#2b6cb0">Checkout</button>
+    </section>
+
+  </div>
+
+  <div class="toast" id="toast">Copied</div>
+
+  <script>
+    const STORAGE_KEY = "prototype:v1";
+    const DEFAULTS = { duration: 300, color: "#6b46c1", label: "Checkout" };
+
+    const $ = (id) => document.getElementById(id);
+    const ctrls = ["duration", "color", "label"];
+
+    function load() {
+      try { return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") }; }
+      catch { return { ...DEFAULTS }; }
+    }
+    function save(state) { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+    function readState() {
+      return {
+        duration: Number($("duration").value),
+        color:    $("color").value,
+        label:    $("label").value,
+      };
+    }
+    function writeState(s) {
+      $("duration").value = s.duration;
+      $("color").value    = s.color;
+      $("label").value    = s.label;
+    }
+
+    function render() {
+      const s = readState();
+      $("duration-v").textContent = s.duration + "ms";
+      const t = $("target");
+      t.textContent = s.label;
+      t.style.transitionDuration = s.duration + "ms";
+      // Demo behaviour: clicking the target animates to the chosen color.
+      t.onclick = () => { t.style.background = s.color; };
+      save(s);
+    }
+
+    function toast(msg) {
+      const el = $("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 1200);
+    }
+
+    async function copy(text, label) {
+      try { await navigator.clipboard.writeText(text); toast(label + " copied"); }
+      catch { toast("Copy failed — select & copy manually"); }
+    }
+
+    // Wire up.
+    writeState(load());
+    ctrls.forEach(id => $(id).addEventListener("input", render));
+    $("copy-json").addEventListener("click",
+      () => copy(JSON.stringify(readState(), null, 2), "JSON"));
+    $("copy-prompt").addEventListener("click", () => {
+      const s = readState();
+      const prompt = `Apply these settings to the checkout button:
+- animation duration: ${s.duration}ms
+- final color: ${s.color}
+- label: ${JSON.stringify(s.label)}`;
+      copy(prompt, "Prompt");
+    });
+    $("reset").addEventListener("click", () => { writeState(DEFAULTS); render(); });
+
+    render();
+  </script>
+
+</body>
+</html>

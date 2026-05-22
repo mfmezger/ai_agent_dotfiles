@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PR EXPLAINER — #NNN</title>
+  <!--
+    Template: pr-review.html
+    Use for: PR explainers, code review write-ups, "what changed and why" docs.
+    Conventions:
+      - Severity legend at the top (info / warn / error).
+      - "What to review first" block right after the summary.
+      - Real diffs in <pre> blocks with green/red line backgrounds.
+      - Inline annotations next to the diff lines that need explanation.
+      - Group changes by file or by concern, not by commit.
+  -->
+  <style>
+    :root {
+      --fg: #1a202c;
+      --muted: #4a5568;
+      --bg: #ffffff;
+      --bg-soft: #f7fafc;
+      --border: #e2e8f0;
+      --accent: #2b6cb0;
+      --ok: #2f855a;
+      --warn: #c05621;
+      --err: #c53030;
+      --add-bg: #e6ffed;
+      --add-bar: #2f855a;
+      --del-bg: #ffeef0;
+      --del-bar: #c53030;
+      --hunk-fg: #6f42c1;
+      --code-bg: #f6f8fa;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e2e8f0; --muted: #a0aec0;
+        --bg: #1a202c; --bg-soft: #2d3748; --border: #4a5568;
+        --accent: #63b3ed;
+        --add-bg: #14432010; --del-bg: #6a1a1a20;
+        --code-bg: #2d3748;
+      }
+    }
+    * { box-sizing: border-box; }
+    html { color-scheme: light dark; }
+    body {
+      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--fg); background: var(--bg);
+      max-width: 1100px; margin: 2rem auto; padding: 0 1.25rem 4rem;
+    }
+    h1, h2, h3 { line-height: 1.25; }
+    h1 { font-size: 1.8rem; margin: 0 0 .25rem; border-bottom: 1px solid var(--border); padding-bottom: .5rem; }
+    h2 { font-size: 1.3rem; margin: 2rem 0 .75rem; }
+    h3 { font-size: 1.05rem; margin: 1.5rem 0 .5rem; }
+    .meta { color: var(--muted); font-size: .9rem; margin-bottom: 1.5rem; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: var(--code-bg); padding: .1em .35em; border-radius: 4px; font-size: .9em; }
+
+    .legend { display: flex; gap: .5rem; flex-wrap: wrap; margin: 1rem 0 1.5rem; }
+    .tag { display: inline-block; padding: .15rem .6rem; border-radius: 999px;
+           font-size: .75rem; font-weight: 600; }
+    .tag-info { background: #bee3f8; color: #2a4365; }
+    .tag-warn { background: #feebc8; color: #7b341e; }
+    .tag-err  { background: #fed7d7; color: #742a2a; }
+    .tag-ok   { background: #c6f6d5; color: #22543d; }
+
+    .summary, .first {
+      background: var(--bg-soft);
+      border-left: 4px solid var(--accent);
+      padding: 1rem 1.25rem;
+      border-radius: 4px;
+      margin: 1rem 0 1.5rem;
+    }
+    .first { border-color: var(--warn); }
+    .summary h2, .first h2 { margin: 0 0 .5rem; font-size: 1rem;
+                             text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+
+    .file {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin: 1.5rem 0;
+      overflow: hidden;
+    }
+    .file-header {
+      background: var(--bg-soft);
+      padding: .55rem .9rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: .9rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+    .file-header .path { flex: 1; }
+    .diff {
+      margin: 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: .85rem;
+      line-height: 1.5;
+      background: var(--bg);
+    }
+    .diff-row {
+      display: grid;
+      grid-template-columns: 3.5rem 1fr;
+      border-left: 3px solid transparent;
+    }
+    .diff-row .ln {
+      color: var(--muted);
+      text-align: right;
+      padding: .15rem .6rem;
+      user-select: none;
+      background: var(--bg-soft);
+      border-right: 1px solid var(--border);
+    }
+    .diff-row .code { padding: .15rem .75rem; white-space: pre-wrap; }
+    .diff-row.add  { background: var(--add-bg); border-left-color: var(--add-bar); }
+    .diff-row.del  { background: var(--del-bg); border-left-color: var(--del-bar); }
+    .diff-row.hunk { color: var(--hunk-fg); background: var(--bg-soft); }
+
+    .annotation {
+      grid-column: 1 / -1;
+      background: var(--bg-soft);
+      border-top: 1px dashed var(--border);
+      border-bottom: 1px dashed var(--border);
+      padding: .55rem .9rem;
+      font-family: inherit;
+      font-size: .9rem;
+      color: var(--fg);
+    }
+    .annotation .tag { margin-right: .5rem; }
+
+    @media print {
+      body { max-width: none; }
+      .file { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>PR #NNN — short title</h1>
+  <p class="meta">Author · branch · <a href="#">link to PR</a></p>
+
+  <div class="legend">
+    <span class="tag tag-info">info</span>
+    <span class="tag tag-warn">warn</span>
+    <span class="tag tag-err">error</span>
+    <span class="tag tag-ok">good change</span>
+  </div>
+
+  <section class="summary">
+    <h2>What this PR does</h2>
+    <p>One-paragraph plain-English summary of the change and the motivation.</p>
+  </section>
+
+  <section class="first">
+    <h2>Review this first</h2>
+    <ol>
+      <li><code>path/to/critical_file.py</code> — the core logic change.</li>
+      <li><code>path/to/tests.py</code> — the new test coverage.</li>
+      <li>Everything else is rename / formatting.</li>
+    </ol>
+  </section>
+
+  <h2>Changes by file</h2>
+
+  <div class="file">
+    <div class="file-header">
+      <span class="path">path/to/critical_file.py</span>
+      <span class="tag tag-warn">needs careful review</span>
+    </div>
+    <div class="diff">
+      <div class="diff-row hunk"><span class="ln"></span><span class="code">@@ -10,7 +10,9 @@ def handle(req):</span></div>
+      <div class="diff-row"     ><span class="ln">10</span><span class="code">    validate(req)</span></div>
+      <div class="diff-row del"  ><span class="ln">11</span><span class="code">-    return process(req)</span></div>
+      <div class="diff-row add"  ><span class="ln">11</span><span class="code">+    result = process(req)</span></div>
+      <div class="diff-row add"  ><span class="ln">12</span><span class="code">+    audit(req, result)</span></div>
+      <div class="diff-row add"  ><span class="ln">13</span><span class="code">+    return result</span></div>
+      <div class="annotation"><span class="tag tag-warn">warn</span>
+        Audit happens after processing but before the response is sent. If <code>audit()</code>
+        throws, the caller never sees the result. Wrap in try/except or move to a background task.
+      </div>
+    </div>
+  </div>
+
+  <div class="file">
+    <div class="file-header">
+      <span class="path">path/to/tests.py</span>
+      <span class="tag tag-ok">good</span>
+    </div>
+    <div class="diff">
+      <div class="diff-row hunk"><span class="ln"></span><span class="code">@@ -0,0 +1,5 @@</span></div>
+      <div class="diff-row add"><span class="ln">1</span><span class="code">+def test_audit_failure_does_not_break_response():</span></div>
+      <div class="diff-row add"><span class="ln">2</span><span class="code">+    ...</span></div>
+    </div>
+  </div>
+
+</body>
+</html>
