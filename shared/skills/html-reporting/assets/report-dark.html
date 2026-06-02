@@ -217,6 +217,12 @@
   footer hr{border:none;border-top:1px solid var(--border);margin:0 auto 24px;max-width:600px}
 
   @media print {
+    /* Flip to dark-on-white for print: with "print backgrounds" off (the default)
+       the dark paper drops out and light-gray text would be invisible otherwise. */
+    :root{
+      --bg:#fff; --bg2:#f0f0f0; --panel:#f9f9f9; --panel2:#eaeaea; --border:#ccc;
+      --text:#000; --muted:#555; --code-bg:#f5f5f5; --code-border:#e0e0e0;
+    }
     nav.toc,.filterbar,.backtop,.toc-btn{display:none}
     .card details > summary::after{display:none}
     .card .body{display:block !important}
@@ -441,16 +447,18 @@
     return href && href.startsWith('#') && href.length > 1;
   });
   const tocMap = new Map(tocLinks.map(a => [a.getAttribute('href').slice(1), a]));
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        tocLinks.forEach(l => l.classList.remove('active'));
-        const a = tocMap.get(e.target.id);
-        if (a) a.classList.add('active');
-      }
-    });
-  }, { rootMargin: '-40% 0px -55% 0px' });
-  document.querySelectorAll('section[id]').forEach(s => io.observe(s));
+  if (window.IntersectionObserver) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          tocLinks.forEach(l => l.classList.remove('active'));
+          const a = tocMap.get(e.target.id);
+          if (a) a.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-40% 0px -55% 0px' });
+    document.querySelectorAll('section[id]').forEach(s => io.observe(s));
+  }
 
   const back = document.getElementById('backtop');
   window.addEventListener('scroll', () => back.classList.toggle('show', window.scrollY > 600));
