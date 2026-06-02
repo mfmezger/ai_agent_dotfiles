@@ -53,19 +53,65 @@ A good HTML artifact is:
 
 Three bundled templates cover ~80% of cases. Copy from whichever fits, then adapt:
 
-- **`assets/report.html`** — Reports, research write-ups, learning material, summaries, decks. TOC, executive summary, sections, tables, callouts, SVG-ready.
+- **`assets/report.html`** — The flagship template for reports, code reviews, audits, research write-ups, summaries, and structured findings. A polished editorial theme (soft-gray paper, serif headlines, terracotta accent) with a light/dark toggle, collapsible severity-coded cards, a TL;DR strip, a sticky pill TOC, stats grid, filter chips, live search, and keyboard shortcuts. See "The report template" below before customizing.
 - **`assets/pr-review.html`** — PR explainers and code reviews. Diff blocks with green/red line backgrounds, severity badges, inline annotations, "what to review first" orientation block.
 - **`assets/prototype.html`** — Interactive prototypes and custom editors. Sliders/inputs on the left, live preview on the right, `localStorage` persistence, "Copy as JSON" / "Copy as prompt" export buttons.
 
-All three share a common visual baseline (system font stack, light/dark color scheme, generous spacing, accessible colors). Read the template you're using before customizing — they encode the conventions described in this skill.
+All three share a common visual baseline (light/dark color scheme, generous spacing, accessible colors). Read the template you're using before customizing — they encode the conventions described in this skill.
 
 If none of the templates fit (e.g., a draggable triage board, a flag editor with dependency validation), still write a single self-contained file and lift the `<style>` block from the closest template so the visual style stays consistent.
+
+## The report template (`assets/report.html`)
+
+This is the default for any "review / analyze / audit / report" request. It's a single self-contained file — copy it, fill the `{{PLACEHOLDERS}}`, write it, then tell the user the absolute path and the `open <path>` command.
+
+**Visual theme.** Calm editorial look: soft-gray "paper" background, serif display headlines (Fraunces) over a sans body (Inter), flat hairline cards (separation by fill, not drop shadow), and a single terracotta accent used sparingly. Fonts load from Google Fonts with a system-font fallback — delete the two `<link>` tags in the `<head>` for a fully offline file. Light is the default; dark mode is a warm charcoal applied via `prefers-color-scheme` or the manual toggle.
+
+**Light/dark toggle.** A theme button (and the `t` shortcut) flips between light and dark and persists the choice to `localStorage`. It defaults to the OS preference, then remembers the user's manual choice. An inline `<head>` script re-applies the saved choice before first paint to avoid a flash.
+
+**Built-in interactive features** (fill in content, don't rebuild them):
+
+- **Collapsible cards** — each finding is a `<details>` card; the always-visible summary holds a severity badge, title, and one-line TL;DR, with the body hidden until expanded.
+- **TL;DR strip** under the hero — one sentence covering the whole report (`{{TLDR_SENTENCE}}`). Always fill it; it's what a busy reader actually reads.
+- **Stats grid + severity filter chips** — clickable counts per severity; filtered views are shareable via URL hash (`#sev=crit`).
+- **Live search** over card text, **tag filtering**, **active TOC highlight**, **back-to-top**, **expand/collapse all**.
+- **Reading time** auto-computed from page text (~220 wpm).
+- **Keyboard shortcuts**: `j`/`k` next/prev card, `e`/`c` expand/collapse all, `t` toggle theme, `/` focus search, `1–4` filter by severity, `0` show all, `?` help, `Esc` clear.
+- **Print/PDF safe** — `@media print` forces all cards open and hides the filter bar / controls.
+
+**Severity classes** drive the colored card stripe, the badge, and the filter. Use one of `crit | high | med | low`, document the mapping in the legend, and put a `data-sev` on every card. The card markup looks like:
+
+```html
+<div class="card crit" data-sev="crit" data-tags="security,perf">
+  <details open>  <!-- open by default for crit; omit `open` for lower severities -->
+    <summary>
+      <div class="head">
+        <span class="badge crit">Critical</span>
+        <h3>1. Short finding title with <code>code refs</code></h3>
+        <span class="tag" data-tag="security">security</span>
+      </div>
+      <p class="tldr-line">One-line takeaway — what's wrong and why it matters.</p>
+    </summary>
+    <div class="body">
+      <div class="files"><span class="path">path/to/file.py:42</span></div>
+      <p>Full explanation. <code>inline</code> for symbols, <pre>blocks</pre> for snippets.</p>
+      <div class="fix"><strong>Fix:</strong> concrete remediation.</div>
+    </div>
+  </details>
+</div>
+```
+
+The `.tldr-line` is the most important UX element — if you can't summarize a finding in one line, it's probably two findings. For non-review reports (research, summaries) the same structure works: use the cards as sections and pick a sensible severity-to-meaning mapping, or just use plain `<h2>`/`<p>` content inside `<main>`.
+
+**Typography tokens.** The CSS exposes calibrated `:root` variables (`--body-size`, `--body-line`, `--prose-measure`, etc.) tuned for sustained reading and dark-mode legibility. Don't override them directly unless solving a specific layout problem; if you must, do it at the `:root` level of the report you generate (not the template) and leave a comment.
+
+**Building a new theme.** Every theme is just a `<style>` reskin: keep the same markup, placeholders, severity classes, and `<script>`, and swap only the `:root` tokens and font stack. Add new looks as additive variant files (e.g. `report-<name>.html`) rather than overwriting `report.html`, and QA both light and dark modes since their contrast bugs are independent.
 
 ## Use-case playbook
 
 ### Reports, research, and learning
 
-The flagship use case. Claude Code can pull from the codebase, git history, Slack/Linear via MCP, the open web, and local files, then synthesize all of it into one page someone can actually read.
+The flagship use case. Pull from the codebase, git history, issue trackers (via MCP), the open web, and local files, then synthesize all of it into one page someone can actually read.
 
 What a good report includes:
 
