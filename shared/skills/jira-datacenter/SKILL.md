@@ -45,9 +45,12 @@ OR for basic auth:
 
 ## Usage
 
+The script is self-bootstrapping via PEP 723 inline metadata + a `uv run --script`
+shebang. Requires `uv` on `PATH`. First call resolves deps into a cached venv;
+subsequent calls are instant.
+
 ```bash
-uvx --with requests --with python-dotenv --with typer --with rich \
-  python ~/.claude/skills/jira-datacenter/scripts/jira.py COMMAND [OPTIONS]
+~/.claude/skills/jira-datacenter/scripts/jira.py COMMAND [OPTIONS]
 ```
 
 ## Commands
@@ -55,8 +58,7 @@ uvx --with requests --with python-dotenv --with typer --with rich \
 ### Get Issue
 
 ```bash
-uvx --with requests --with python-dotenv --with typer --with rich \
-  python ~/.claude/skills/jira-datacenter/scripts/jira.py get PROJ-123
+~/.claude/skills/jira-datacenter/scripts/jira.py get PROJ-123
 ```
 
 Options:
@@ -68,8 +70,7 @@ Options:
 ### Search Issues (JQL)
 
 ```bash
-uvx --with requests --with python-dotenv --with typer --with rich \
-  python ~/.claude/skills/jira-datacenter/scripts/jira.py search "project = PROJ AND status = Open"
+~/.claude/skills/jira-datacenter/scripts/jira.py search "project = PROJ AND status = Open"
 ```
 
 Options:
@@ -81,8 +82,7 @@ Options:
 ### Create Issue
 
 ```bash
-uvx --with requests --with python-dotenv --with typer --with rich \
-  python ~/.claude/skills/jira-datacenter/scripts/jira.py create \
+~/.claude/skills/jira-datacenter/scripts/jira.py create \
   --project PROJ \
   --type Bug \
   --summary "Issue title" \
@@ -103,8 +103,7 @@ Options:
 ### Update Issue
 
 ```bash
-uvx --with requests --with python-dotenv --with typer --with rich \
-  python ~/.claude/skills/jira-datacenter/scripts/jira.py update PROJ-123 \
+~/.claude/skills/jira-datacenter/scripts/jira.py update PROJ-123 \
   --summary "New title" \
   --description "Updated description"
 ```
@@ -122,56 +121,47 @@ Options:
 
 ```bash
 # List available transitions
-uvx --with requests --with python-dotenv --with typer --with rich \
-  python ~/.claude/skills/jira-datacenter/scripts/jira.py transitions PROJ-123
+~/.claude/skills/jira-datacenter/scripts/jira.py transitions PROJ-123
 
 # Transition to new status
-uvx --with requests --with python-dotenv --with typer --with rich \
-  python ~/.claude/skills/jira-datacenter/scripts/jira.py transition PROJ-123 "In Progress"
+~/.claude/skills/jira-datacenter/scripts/jira.py transition PROJ-123 "In Progress"
 ```
 
 ### Add Comment
 
 ```bash
-uvx --with requests --with python-dotenv --with typer --with rich \
-  python ~/.claude/skills/jira-datacenter/scripts/jira.py comment PROJ-123 "This is my comment"
+~/.claude/skills/jira-datacenter/scripts/jira.py comment PROJ-123 "This is my comment"
 ```
 
 ### Assign Issue
 
 ```bash
-uvx --with requests --with python-dotenv --with typer --with rich \
-  python ~/.claude/skills/jira-datacenter/scripts/jira.py assign PROJ-123 username
+~/.claude/skills/jira-datacenter/scripts/jira.py assign PROJ-123 username
 ```
 
 Use `-` to unassign:
 
 ```bash
-uvx --with requests --with python-dotenv --with typer --with rich \
-  python ~/.claude/skills/jira-datacenter/scripts/jira.py assign PROJ-123 -
+~/.claude/skills/jira-datacenter/scripts/jira.py assign PROJ-123 -
 ```
 
 ### List Projects
 
 ```bash
-uvx --with requests --with python-dotenv --with typer --with rich \
-  python ~/.claude/skills/jira-datacenter/scripts/jira.py projects
+~/.claude/skills/jira-datacenter/scripts/jira.py projects
 ```
 
 ## Examples
 
 ```bash
 # Get issue with comments
-uvx --with requests --with python-dotenv --with typer --with rich \
-  python ~/.claude/skills/jira-datacenter/scripts/jira.py get PROJ-123 --comments
+~/.claude/skills/jira-datacenter/scripts/jira.py get PROJ-123 --comments
 
 # Search for my open issues
-uvx --with requests --with python-dotenv --with typer --with rich \
-  python ~/.claude/skills/jira-datacenter/scripts/jira.py search "assignee = currentUser() AND status != Done"
+~/.claude/skills/jira-datacenter/scripts/jira.py search "assignee = currentUser() AND status != Done"
 
 # Create a bug with priority
-uvx --with requests --with python-dotenv --with typer --with rich \
-  python ~/.claude/skills/jira-datacenter/scripts/jira.py create \
+~/.claude/skills/jira-datacenter/scripts/jira.py create \
   --project PROJ \
   --type Bug \
   --summary "Login fails with special characters" \
@@ -180,12 +170,10 @@ uvx --with requests --with python-dotenv --with typer --with rich \
   --labels security,login
 
 # Move issue to In Progress
-uvx --with requests --with python-dotenv --with typer --with rich \
-  python ~/.claude/skills/jira-datacenter/scripts/jira.py transition PROJ-123 "In Progress"
+~/.claude/skills/jira-datacenter/scripts/jira.py transition PROJ-123 "In Progress"
 
 # Add a comment
-uvx --with requests --with python-dotenv --with typer --with rich \
-  python ~/.claude/skills/jira-datacenter/scripts/jira.py comment PROJ-123 "Fixed in commit abc123"
+~/.claude/skills/jira-datacenter/scripts/jira.py comment PROJ-123 "Fixed in commit abc123"
 ```
 
 ## Output

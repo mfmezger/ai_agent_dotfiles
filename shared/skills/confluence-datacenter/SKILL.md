@@ -45,9 +45,12 @@ OR for basic auth:
 
 ## Usage
 
+The script is self-bootstrapping via PEP 723 inline metadata + a `uv run --script`
+shebang. Requires `uv` on `PATH`. First call resolves deps into a cached venv
+(markitdown pulls onnxruntime, ~17 MiB); subsequent calls are instant.
+
 ```bash
-uvx --with requests --with python-dotenv --with typer --with rich --with markitdown \
-  python ~/.claude/skills/confluence-datacenter/scripts/confluence.py COMMAND [OPTIONS]
+~/.claude/skills/confluence-datacenter/scripts/confluence.py COMMAND [OPTIONS]
 ```
 
 ## Commands
@@ -56,12 +59,10 @@ uvx --with requests --with python-dotenv --with typer --with rich --with markitd
 
 ```bash
 # By page ID
-uvx --with requests --with python-dotenv --with typer --with rich --with markitdown \
-  python ~/.claude/skills/confluence-datacenter/scripts/confluence.py get 12345
+~/.claude/skills/confluence-datacenter/scripts/confluence.py get 12345
 
 # By title and space
-uvx --with requests --with python-dotenv --with typer --with rich --with markitdown \
-  python ~/.claude/skills/confluence-datacenter/scripts/confluence.py get --space DEV --title "Getting Started"
+~/.claude/skills/confluence-datacenter/scripts/confluence.py get --space DEV --title "Getting Started"
 ```
 
 Options:
@@ -72,8 +73,7 @@ Options:
 ### Search Content (CQL)
 
 ```bash
-uvx --with requests --with python-dotenv --with typer --with rich --with markitdown \
-  python ~/.claude/skills/confluence-datacenter/scripts/confluence.py search "space = DEV AND title ~ 'API'"
+~/.claude/skills/confluence-datacenter/scripts/confluence.py search "space = DEV AND title ~ 'API'"
 ```
 
 Options:
@@ -85,8 +85,7 @@ Options:
 ### Create Page
 
 ```bash
-uvx --with requests --with python-dotenv --with typer --with rich --with markitdown \
-  python ~/.claude/skills/confluence-datacenter/scripts/confluence.py create \
+~/.claude/skills/confluence-datacenter/scripts/confluence.py create \
   --space DEV \
   --title "New Page Title" \
   --body "Page content in **markdown** or HTML"
@@ -104,8 +103,7 @@ Options:
 ### Update Page
 
 ```bash
-uvx --with requests --with python-dotenv --with typer --with rich --with markitdown \
-  python ~/.claude/skills/confluence-datacenter/scripts/confluence.py update 12345 \
+~/.claude/skills/confluence-datacenter/scripts/confluence.py update 12345 \
   --body "Updated content"
 ```
 
@@ -120,8 +118,7 @@ Options:
 ### Delete Page
 
 ```bash
-uvx --with requests --with python-dotenv --with typer --with rich --with markitdown \
-  python ~/.claude/skills/confluence-datacenter/scripts/confluence.py delete 12345
+~/.claude/skills/confluence-datacenter/scripts/confluence.py delete 12345
 ```
 
 Options:
@@ -131,15 +128,13 @@ Options:
 ### List Child Pages
 
 ```bash
-uvx --with requests --with python-dotenv --with typer --with rich --with markitdown \
-  python ~/.claude/skills/confluence-datacenter/scripts/confluence.py children 12345
+~/.claude/skills/confluence-datacenter/scripts/confluence.py children 12345
 ```
 
 ### List Spaces
 
 ```bash
-uvx --with requests --with python-dotenv --with typer --with rich --with markitdown \
-  python ~/.claude/skills/confluence-datacenter/scripts/confluence.py spaces
+~/.claude/skills/confluence-datacenter/scripts/confluence.py spaces
 ```
 
 Options:
@@ -150,20 +145,17 @@ Options:
 
 ```bash
 # List attachments
-uvx --with requests --with python-dotenv --with typer --with rich --with markitdown \
-  python ~/.claude/skills/confluence-datacenter/scripts/confluence.py attachments 12345
+~/.claude/skills/confluence-datacenter/scripts/confluence.py attachments 12345
 
 # Upload attachment
-uvx --with requests --with python-dotenv --with typer --with rich --with markitdown \
-  python ~/.claude/skills/confluence-datacenter/scripts/confluence.py attachments 12345 \
+~/.claude/skills/confluence-datacenter/scripts/confluence.py attachments 12345 \
   --upload /path/to/file.pdf
 ```
 
 ### Export Page
 
 ```bash
-uvx --with requests --with python-dotenv --with typer --with rich --with markitdown \
-  python ~/.claude/skills/confluence-datacenter/scripts/confluence.py export 12345 \
+~/.claude/skills/confluence-datacenter/scripts/confluence.py export 12345 \
   --format pdf \
   --output ./exported-page.pdf
 ```
@@ -177,45 +169,38 @@ Options:
 
 ```bash
 # Get a page as markdown
-uvx --with requests --with python-dotenv --with typer --with rich --with markitdown \
-  python ~/.claude/skills/confluence-datacenter/scripts/confluence.py get 12345
+~/.claude/skills/confluence-datacenter/scripts/confluence.py get 12345
 
 # Search for pages about API in DEV space
-uvx --with requests --with python-dotenv --with typer --with rich --with markitdown \
-  python ~/.claude/skills/confluence-datacenter/scripts/confluence.py search \
+~/.claude/skills/confluence-datacenter/scripts/confluence.py search \
   "space = DEV AND type = page AND text ~ 'API documentation'"
 
 # Create page from markdown file
-uvx --with requests --with python-dotenv --with typer --with rich --with markitdown \
-  python ~/.claude/skills/confluence-datacenter/scripts/confluence.py create \
+~/.claude/skills/confluence-datacenter/scripts/confluence.py create \
   --space DEV \
   --title "API Reference" \
   --body-file ./api-docs.md \
   --format markdown
 
 # Create child page
-uvx --with requests --with python-dotenv --with typer --with rich --with markitdown \
-  python ~/.claude/skills/confluence-datacenter/scripts/confluence.py create \
+~/.claude/skills/confluence-datacenter/scripts/confluence.py create \
   --space DEV \
   --title "Sub Page" \
   --body "Content here" \
   --parent 12345
 
 # Update page with file content
-uvx --with requests --with python-dotenv --with typer --with rich --with markitdown \
-  python ~/.claude/skills/confluence-datacenter/scripts/confluence.py update 12345 \
+~/.claude/skills/confluence-datacenter/scripts/confluence.py update 12345 \
   --body-file ./updated-docs.md \
   --format markdown
 
 # Export page to PDF
-uvx --with requests --with python-dotenv --with typer --with rich --with markitdown \
-  python ~/.claude/skills/confluence-datacenter/scripts/confluence.py export 12345 \
+~/.claude/skills/confluence-datacenter/scripts/confluence.py export 12345 \
   --format pdf \
   --output ./docs.pdf
 
 # Upload diagram to page
-uvx --with requests --with python-dotenv --with typer --with rich --with markitdown \
-  python ~/.claude/skills/confluence-datacenter/scripts/confluence.py attachments 12345 \
+~/.claude/skills/confluence-datacenter/scripts/confluence.py attachments 12345 \
   --upload ./architecture.png
 ```
 

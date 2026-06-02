@@ -1,4 +1,14 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#   "requests",
+#   "python-dotenv",
+#   "typer",
+#   "rich",
+#   "markitdown",
+# ]
+# ///
 """
 Confluence Data Center REST API client.
 
