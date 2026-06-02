@@ -94,7 +94,8 @@ This is the default for any "review / analyze / audit / report" request. It's a 
     </summary>
     <div class="body">
       <div class="files"><span class="path">path/to/file.py:42</span></div>
-      <p>Full explanation. <code>inline</code> for symbols, <pre>blocks</pre> for snippets.</p>
+      <p>Full explanation. Use <code>inline</code> for symbols.</p>
+      <pre>blocks for snippets</pre>
       <div class="fix"><strong>Fix:</strong> concrete remediation.</div>
     </div>
   </details>
