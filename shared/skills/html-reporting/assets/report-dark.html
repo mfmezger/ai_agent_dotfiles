@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>{{HERO_TITLE}}</title>
 <!--
-  Template: report.html — DEFAULT (LIGHT) report / analysis / review renderer.
+  Template: report-dark.html — DARK report / analysis / review renderer.
   Use for: code reviews, audits, research write-ups, summaries, structured findings.
-  Calm editorial aesthetic: soft-gray paper, serif display headlines, hairline borders,
+  Calm editorial aesthetic: warm-charcoal paper, serif display headlines, hairline borders,
   flat cards (no drop shadow), single terracotta accent used sparingly.
-  This is the LIGHT theme. For dark, use the sibling file report-dark.html (same markup,
+  This is the DARK theme. For light, use the sibling file report.html (same markup,
   swapped :root tokens). The two files are deliberately separate — no in-page toggle.
   Self-contained: all CSS/JS inline. Fraunces (serif) + Inter (sans) loaded from Google
   Fonts with a system-font fallback — delete the <link> tags for a fully offline file.
@@ -20,27 +20,28 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@300..600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  /* ===== THEME TOKENS (LIGHT) ===== */
+  /* ===== THEME TOKENS (DARK) ===== */
   :root {
-    /* Soft-gray "paper" base (a step darker than stark white, not mid-gray). */
-    --bg:#e8e7e3; --bg2:#e0dfda; --panel:#f6f5f3; --panel2:#edece8;
-    --border:#d3d2cb;
-    /* Muted is darkened for WCAG AA contrast on the gray paper — don't lighten it. */
-    --text:#1d1d1b; --muted:#595951;
-    /* Single terracotta/clay accent — the one pop of color. */
-    --accent:#c2613f; --accent2:#9a7b5a;
-    /* Severities tuned for contrast on light paper. */
-    --crit:#b23b34; --high:#bb6b2c; --med:#8a6d1f; --low:#4f8a63; --ok:#3f8a5a;
-    --code-bg:#eae9e4; --code-border:#d6d5ce;
-    --toc-bg:rgba(232,231,227,0.85);   /* sticky-nav backdrop */
+    /* Warm charcoal (NOT indigo) soft-black surfaces. */
+    --bg:#1a1a18; --bg2:#212120; --panel:#262624; --panel2:#2e2e2b;
+    /* Border kept visible so hairline cards separate without leaning on the accent rail. */
+    --border:#45453f;
+    /* Muted kept readable for the dimmest meta labels. */
+    --text:#e9e7e1; --muted:#b0afa4;
+    /* Single terracotta/clay accent — the one pop of color (lifted for dark contrast). */
+    --accent:#e08a68; --accent2:#c2a883;
+    /* Severities tuned for contrast on the dark paper. */
+    --crit:#ef6b62; --high:#e0a04f; --med:#d8bd5c; --low:#6fc095; --ok:#6fc095;
+    --code-bg:#201f1d; --code-border:#3a3a36;
+    --toc-bg:rgba(26,26,24,0.85);   /* sticky-nav backdrop */
     --shadow:none;                /* flat cards — separation by fill, not shadow */
     --card-radius:10px;
-    /* Typography tokens. */
+    /* Typography tokens (dark wants a touch more air + tracking). */
     --body-size:17px;
-    --body-line:1.65;
-    --body-track:0;
+    --body-line:1.7;
+    --body-track:0.008em;
     --body-weight:400;
-    --heading-weight:560;
+    --heading-weight:540;
     --prose-measure:68ch;
     --serif:"Fraunces",Georgia,"Times New Roman",serif;
     --sans:"Inter","InterVariable",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
