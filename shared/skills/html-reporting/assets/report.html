@@ -407,7 +407,13 @@
     let newHash = '';
     if (sev !== 'all') newHash = '#sev=' + sev;
     else if (location.hash && !location.hash.startsWith('#sev=')) newHash = location.hash;
-    history.replaceState(null, '', location.pathname + newHash);
+    // replaceState throws a SecurityError on file:// in some browsers; fall back
+    // to setting the hash directly so filtering never crashes when opened locally.
+    try {
+      history.replaceState(null, '', location.pathname + location.search + newHash);
+    } catch (e) {
+      location.hash = newHash;
+    }
     apply();
   }
   sevChips.forEach(c => c.addEventListener('click', () => setSev(c.dataset.filter)));
