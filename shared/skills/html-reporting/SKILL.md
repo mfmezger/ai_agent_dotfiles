@@ -51,21 +51,69 @@ A good HTML artifact is:
 
 ## Default starting point
 
-Three bundled templates cover ~80% of cases. Copy from whichever fits, then adapt:
+The bundled templates cover ~80% of cases. Copy from whichever fits, then adapt:
 
-- **`assets/report.html`** — Reports, research write-ups, learning material, summaries, decks. TOC, executive summary, sections, tables, callouts, SVG-ready.
+- **`assets/report.html`** (light) and **`assets/report-dark.html`** (dark) — The flagship template for reports, code reviews, audits, research write-ups, summaries, and structured findings. A polished editorial theme (soft-gray/charcoal paper, serif headlines, terracotta accent) with collapsible severity-coded cards, a TL;DR strip, a sticky pill TOC, stats grid, filter chips, and live search. The two files are identical except for the `:root` color tokens — pick one; there is no in-page toggle. See "The report template" below before customizing.
 - **`assets/pr-review.html`** — PR explainers and code reviews. Diff blocks with green/red line backgrounds, severity badges, inline annotations, "what to review first" orientation block.
 - **`assets/prototype.html`** — Interactive prototypes and custom editors. Sliders/inputs on the left, live preview on the right, `localStorage` persistence, "Copy as JSON" / "Copy as prompt" export buttons.
 
-All three share a common visual baseline (system font stack, light/dark color scheme, generous spacing, accessible colors). Read the template you're using before customizing — they encode the conventions described in this skill.
+They share a common visual baseline (generous spacing, accessible colors). Read the template you're using before customizing — they encode the conventions described in this skill.
 
 If none of the templates fit (e.g., a draggable triage board, a flag editor with dependency validation), still write a single self-contained file and lift the `<style>` block from the closest template so the visual style stays consistent.
+
+## The report template (`assets/report.html` / `assets/report-dark.html`)
+
+This is the default for any "review / analyze / audit / report" request. It's a single self-contained file — copy it, fill the `{{PLACEHOLDERS}}`, write it, then tell the user the absolute path and the `open <path>` command.
+
+**Light vs. dark.** Ship as two separate files rather than one file with a toggle. `report.html` is light (soft-gray paper); `report-dark.html` is dark (warm charcoal). They are byte-identical apart from the `:root` color tokens and the header comment. Default to `report.html` (light) — it prints cleanly and pastes into docs. Use `report-dark.html` if the user asks for dark, or generate both and let them pick. Keeping the two modes in separate files keeps each file's CSS/JS simple (no toggle button, no `localStorage`, no `data-theme` logic).
+
+**Visual theme.** Calm editorial look: serif display headlines (Fraunces) over a sans body (Inter), flat hairline cards (separation by fill, not drop shadow), and a single terracotta accent used sparingly. Fonts load from Google Fonts with a system-font fallback — delete the two `<link>` tags in the `<head>` for a fully offline file.
+
+**Built-in interactive features** (fill in content, don't rebuild them):
+
+- **Collapsible cards** — each finding is a `<details>` card; the always-visible summary holds a severity badge, title, and one-line TL;DR, with the body hidden until expanded.
+- **TL;DR strip** under the hero — one sentence covering the whole report (`{{TLDR_SENTENCE}}`). Always fill it; it's what a busy reader actually reads.
+- **Stats grid + severity filter chips** — clickable counts per severity; filtered views are shareable via URL hash (`#sev=crit`).
+- **Live search** over card text, **tag filtering**, **active TOC highlight**, **back-to-top**, **expand/collapse all** (buttons in the sticky TOC).
+- **Reading time** auto-computed from the `<main>` content (~220 wpm).
+- **Print/PDF safe** — cards are force-expanded for printing (and restored after) and the filter bar / controls are hidden.
+
+There are intentionally **no keyboard shortcuts** — the controls are all clickable, which keeps the JS small and avoids hijacking browser shortcuts like `Cmd+C`.
+
+**Severity classes** drive the colored card stripe, the badge, and the filter. Use one of `crit | high | med | low`, document the mapping in the legend, and put a `data-sev` on every card. The card markup looks like:
+
+```html
+<div class="card crit" data-sev="crit" data-tags="security,perf">
+  <details open>  <!-- open by default for crit; omit `open` for lower severities -->
+    <summary>
+      <div class="head">
+        <span class="badge crit">Critical</span>
+        <h3>1. Short finding title with <code>code refs</code></h3>
+        <span class="tag" data-tag="security">security</span>
+      </div>
+      <p class="tldr-line">One-line takeaway — what's wrong and why it matters.</p>
+    </summary>
+    <div class="body">
+      <div class="files"><span class="path">path/to/file.py:42</span></div>
+      <p>Full explanation. Use <code>inline</code> for symbols.</p>
+      <pre>blocks for snippets</pre>
+      <div class="fix"><strong>Fix:</strong> concrete remediation.</div>
+    </div>
+  </details>
+</div>
+```
+
+The `.tldr-line` is the most important UX element — if you can't summarize a finding in one line, it's probably two findings. For non-review reports (research, summaries) the same structure works: use the cards as sections and pick a sensible severity-to-meaning mapping, or just use plain `<h2>`/`<p>` content inside `<main>`.
+
+**Typography tokens.** The CSS exposes calibrated `:root` variables (`--body-size`, `--body-line`, `--prose-measure`, etc.) tuned for sustained reading and dark-mode legibility. Don't override them directly unless solving a specific layout problem; if you must, do it at the `:root` level of the report you generate (not the template) and leave a comment.
+
+**Building a new theme.** Every theme is just a `<style>` reskin: keep the same markup, placeholders, severity classes, and `<script>`, and swap only the `:root` token block and font stack. That's exactly how `report-dark.html` is derived from `report.html`. Add new looks as additive variant files (e.g. `report-<name>.html`) rather than overwriting the existing ones, and check contrast on the actual paper color (light and dark have independent contrast pitfalls).
 
 ## Use-case playbook
 
 ### Reports, research, and learning
 
-The flagship use case. Claude Code can pull from the codebase, git history, Slack/Linear via MCP, the open web, and local files, then synthesize all of it into one page someone can actually read.
+The flagship use case. Pull from the codebase, git history, issue trackers (via MCP), the open web, and local files, then synthesize all of it into one page someone can actually read.
 
 What a good report includes:
 
@@ -178,4 +226,4 @@ If all six are yes, write the file. Then offer to open it in the browser.
 
 - Thariq Shihipar, *Using Claude Code: The Unreasonable Effectiveness of HTML* — https://x.com/trq212/status/2052809885763747935
 - Examples gallery — https://thariqs.github.io/html-effectiveness/
-- Bundled templates — `assets/report.html`, `assets/pr-review.html`, `assets/prototype.html`
+- Bundled templates — `assets/report.html` (light), `assets/report-dark.html` (dark), `assets/pr-review.html`, `assets/prototype.html`
