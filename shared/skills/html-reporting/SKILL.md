@@ -1,7 +1,7 @@
 ---
 name: html-reporting
 description: Produce single-file, self-contained HTML artifacts instead of Markdown for any output a human will actually read. Use whenever the user asks for a "report", "research summary", "write-up", "spec", "plan", "PR explainer", "code review", "design mockup", "prototype", "dashboard", "deck", or anything that benefits from tables, SVG diagrams, color coding, side-by-side comparisons, sliders, drag-and-drop, or shareable visuals. Also use when the user wants to share something visual with a teammate, when a Markdown plan would exceed ~100 lines, when interactive tweaking would help (sliders, copy-as-JSON, copy-as-prompt buttons), or when the model is about to resort to ASCII-art charts or Unicode color blocks in Markdown. Strongly prefer this skill for any "summarize and present" task — even if the user doesn't explicitly say "HTML".
-license: Inspired by Thariq Shihipar (@trq212), "Using Claude Code: The Unreasonable Effectiveness of HTML" (2026).
+license: 'Inspired by Thariq Shihipar (@trq212), "Using Claude Code: The Unreasonable Effectiveness of HTML" (2026).'
 ---
 
 # HTML Reporting
