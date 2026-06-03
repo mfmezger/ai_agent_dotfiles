@@ -24,34 +24,69 @@ stowing repo-managed pi files.
 
 ## Repository Layout
 
+Top-level tool directories are GNU Stow packages. The `shared/` directory is the
+canonical source for reusable content that gets linked or generated into those
+packages.
+
 ```text
-claude/     # ~/.claude config
-opencode/   # ~/.config/opencode config
-codex/      # ~/.codex config
-gemini/     # ~/.gemini config
-pi/         # ~/.pi config, themes, and pi agent settings
-shared/     # Canonical shared skills and context
-scripts/    # Sync helpers
+claude/     # stows to ~/.claude
+opencode/   # stows to ~/.config/opencode
+codex/      # stows to ~/.codex
+gemini/     # stows to ~/.gemini
+pi/         # stows to ~/.pi
+shared/     # canonical shared skills and global context
+scripts/    # install/sync helpers
+```
+
+Important shared paths:
+
+```text
+shared/context/default-coding-guidelines.md  # source for user-level guidance
+shared/skills/<skill>/SKILL.md               # source for reusable skills
+```
+
+Generated or linked targets include:
+
+```text
+claude/.claude/skills/                       # symlinks to shared/skills
+codex/.codex/skills/                         # symlinks to shared/skills
+gemini/.gemini/skills/                       # symlinks to shared/skills
+gemini/.gemini/commands/                     # generated from shared skills
+opencode/.config/opencode/skills/            # symlinks through Claude skills
+pi/.pi/agent/skills/                         # symlinks to shared/skills
+```
+
+Edit shared assets at the source, then regenerate/check derived files:
+
+```bash
+./scripts/sync-skills.sh
+./scripts/sync-contexts.sh
+
+./scripts/sync-skills.sh --check
+./scripts/sync-contexts.sh --check
 ```
 
 ## Skills
+
+Canonical skills live in `shared/skills/`.
 
 ### Git and GitHub
 
 | Name | Short description |
 | --- | --- |
-| `commit` | Commit local changes with Conventional Commits. |
+| `commit` | Create concise Conventional Commits. |
 | `github-pr` | Commit, push, and open or update GitHub pull requests. |
 | `github-pr-feedback` | Triage PR review feedback into actionable and non-actionable items. |
 
-### Documents and Files
+### Documents, Files, and Reporting
 
 | Name | Short description |
 | --- | --- |
 | `convert-to-markdown` | Convert PDFs, Office files, and other documents to Markdown. |
-| `doc-coauthoring` | Co-author documentation through context gathering, drafting, and reader testing. |
+| `doc-coauthoring` | Co-author docs through context gathering, drafting, and reader testing. |
 | `docx` | Create, read, edit, and format Word documents. |
 | `google-workspace-convert` | Convert between Google Workspace files and Markdown. |
+| `html-reporting` | Produce self-contained HTML reports, specs, dashboards, and prototypes. |
 | `pptx` | Create, read, edit, and reorganize PowerPoint presentations. |
 | `xlsx` | Create, read, edit, clean, and convert spreadsheet files. |
 
@@ -59,7 +94,7 @@ scripts/    # Sync helpers
 
 | Name | Short description |
 | --- | --- |
-| `building-pydantic-ai-agents` | Build Pydantic AI agents: tools, capabilities, structured output, streaming, testing, and multi-agent patterns. |
+| `building-pydantic-ai-agents` | Build Pydantic AI agents: tools, structured output, streaming, and tests. |
 | `fastapi` | Build and review FastAPI services, routers, schemas, and tests. |
 | `go-engineering` | Write, debug, refactor, and review idiomatic Go code. |
 | `mcp-builder` | Build high-quality MCP servers for external service integrations. |
@@ -71,33 +106,18 @@ scripts/    # Sync helpers
 
 | Name | Short description |
 | --- | --- |
+| `agent-registry` | Manage Google Cloud Agent Registry services, endpoints, and MCP servers. |
 | `confluence-datacenter` | Search, read, create, and update Confluence Data Center pages. |
 | `generate-image` | Generate or edit images with Gemini image generation. |
 | `jira-datacenter` | Search, read, create, and update Jira Data Center issues. |
 
-### Reachy Mini
-
-| Name | Short description |
-| --- | --- |
-| `reachy-mini-ai-integration` | Build LLM-driven Reachy Mini robot apps. |
-| `reachy-mini-control-loops` | Design real-time Reachy Mini control loops. |
-| `reachy-mini-create-app` | Create new Reachy Mini Python apps and publish them. |
-| `reachy-mini-debugging` | Troubleshoot Reachy Mini connectivity, daemon, motion, and import issues. |
-| `reachy-mini-deep-dive-docs` | Find advanced Reachy Mini SDK, API, and source references. |
-| `reachy-mini-interaction-patterns` | Design Reachy Mini antenna, head-motion, and robot-native interactions. |
-| `reachy-mini-motion-philosophy` | Choose between `goto_target` and `set_target` motion patterns. |
-| `reachy-mini-rest-api` | Control Reachy Mini through REST and WebSocket APIs. |
-| `reachy-mini-safe-torque` | Safely enable and disable Reachy Mini motor torque. |
-| `reachy-mini-setup-environment` | Prepare local tools and resources for Reachy Mini development. |
-| `reachy-mini-symbolic-motion` | Define rhythmic Reachy Mini motion symbolically. |
-| `reachy-mini-testing-apps` | Test Reachy Mini apps in simulation and on hardware. |
-
-### Skill Maintenance
+### Agent and Skill Maintenance
 
 | Name | Short description |
 | --- | --- |
 | `karpathy-guidelines` | Keep coding changes simple, surgical, and goal-driven. |
 | `skill-creator` | Create, improve, and evaluate skills. |
+| `tidy-first` | Separate structural refactors from behavioral changes. |
 
 ## License
 
